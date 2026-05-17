@@ -1,0 +1,15 @@
+@import './quasar.variables.scss';
+
+* { box-sizing: border-box; }
+
+.devspace-card {
+  border-radius: 12px;
+  transition: box-shadow 0.2s;
+}
+.devspace-card:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.12); }
+
+.tag-chip {
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 20px;
+}

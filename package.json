@@ -1,0 +1,28 @@
+{
+  "name": "devspace-frontend",
+  "version": "0.1.0",
+  "description": "DevSpace — frontend Vue 3 + Quasar",
+  "scripts": {
+    "dev": "quasar dev",
+    "build": "quasar build",
+    "lint": "eslint --ext .js,.vue src/"
+  },
+  "dependencies": {
+    "@quasar/extras": "^1.16.12",
+    "axios": "^1.7.2",
+    "pinia": "^2.1.7",
+    "quasar": "^2.16.4",
+    "vue": "^3.4.29",
+    "vue-i18n": "^9.13.1",
+    "vue-router": "^4.3.3"
+  },
+  "devDependencies": {
+    "@quasar/app-vite": "^2.0.0",
+    "@vitejs/plugin-vue": "^5.0.5",
+    "autoprefixer": "^10.4.19",
+    "eslint": "^8.57.0",
+    "eslint-plugin-vue": "^9.27.0",
+    "sass": "^1.77.6",
+    "vite": "^5.3.1"
+  }
+}
