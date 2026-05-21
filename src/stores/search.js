@@ -10,10 +10,13 @@ export const useSearchStore = defineStore('search', () => {
   async function search(q, projectId = null) {
     query.value   = q
     loading.value = true
-    const params  = { q, ...(projectId ? { projectId } : {}) }
-    const { data } = await api.get('/api/search', { params })
-    results.value = data.results
-    loading.value = false
+    try {
+      const params = { q, ...(projectId ? { projectId } : {}) }
+      const { data } = await api.get('/api/search', { params })
+      results.value = data.results ?? []
+    } finally {
+      loading.value = false
+    }
   }
 
   function clear() { results.value = []; query.value = '' }

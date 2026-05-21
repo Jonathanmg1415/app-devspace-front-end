@@ -8,22 +8,25 @@ export const useCardsStore = defineStore('cards', () => {
 
   async function fetchAll(projectId) {
     loading.value = true
-    const { data } = await api.get(`/api/projects/${projectId}/cards`)
-    items.value = data
-    loading.value = false
+    try {
+      const { data } = await api.get(`/api/projects/${projectId}/cards`)
+      items.value = data.cards ?? []
+    } finally {
+      loading.value = false
+    }
   }
 
   async function create(projectId, payload) {
     const { data } = await api.post(`/api/projects/${projectId}/cards`, payload)
-    items.value.unshift(data)
-    return data
+    items.value.unshift(data.card)
+    return data.card
   }
 
   async function update(id, payload) {
-    const { data } = await api.patch(`/api/cards/${id}`, payload)
+    const { data } = await api.put(`/api/cards/${id}`, payload)
     const idx = items.value.findIndex(i => i.id === id)
-    if (idx !== -1) items.value[idx] = data
-    return data
+    if (idx !== -1) items.value[idx] = data.card
+    return data.card
   }
 
   async function remove(id) {

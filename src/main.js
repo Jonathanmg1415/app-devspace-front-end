@@ -1,7 +1,7 @@
 import { createApp } from 'vue'
 import { Quasar, Notify, Dialog, Loading, LocalStorage } from 'quasar'
 import { createPinia } from 'pinia'
-import router from './router'
+import router, { setupRouterGuards } from './router'
 import { i18n } from './boot/i18n'
 import { api } from './boot/axios'
 import App from './App.vue'
@@ -16,6 +16,10 @@ const app   = createApp(App)
 
 app.use(Quasar, { plugins: { Notify, Dialog, Loading, LocalStorage }, config: { dark: 'auto' } })
 app.use(pinia)
+
+// Guards van DESPUÉS de montar pinia
+setupRouterGuards(pinia)
+
 app.use(router)
 app.use(i18n)
 app.config.globalProperties.$api = api

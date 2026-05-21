@@ -1,15 +1,454 @@
 @import './quasar.variables.scss';
 
+// ── Fuentes ─────────────────────────────────────────────────
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+// ── Tokens dark ─────────────────────────────────────────────
+:root {
+  --ds-bg-0:        #0B0B0D;
+  --ds-bg-1:        #141418;
+  --ds-bg-2:        #1B1B21;
+  --ds-bg-hover:    #23232B;
+  --ds-border:      rgba(255,255,255,0.06);
+  --ds-border-md:   rgba(255,255,255,0.10);
+  --ds-text-1:      #F1F1F3;
+  --ds-text-2:      #A0A0B0;
+  --ds-text-3:      #5A5A70;
+  --ds-orange:      #F97316;
+  --ds-orange-dim:  rgba(249,115,22,0.12);
+  --ds-orange-glow: rgba(249,115,22,0.20);
+  --ds-shadow:      0 4px 12px rgba(0,0,0,0.24);
+  --ds-radius:      10px;
+  --ds-radius-sm:   6px;
+  --ds-transition:  150ms cubic-bezier(0.4,0,0.2,1);
+}
+
+// ── Tokens light ─────────────────────────────────────────────
+body.body--light {
+  --ds-bg-0:        #F5F5F7;
+  --ds-bg-1:        #FFFFFF;
+  --ds-bg-2:        #FAFAFB;
+  --ds-bg-hover:    #F0F0F3;
+  --ds-border:      #E5E7EB;
+  --ds-border-md:   #D1D5DB;
+  --ds-text-1:      #111827;
+  --ds-text-2:      #6B7280;
+  --ds-text-3:      #9CA3AF;
+  --ds-orange:      #F97316;
+  --ds-orange-dim:  rgba(249,115,22,0.08);
+  --ds-orange-glow: rgba(249,115,22,0.15);
+  --ds-shadow:      0 2px 8px rgba(0,0,0,0.08);
+}
+
+// ── Base ─────────────────────────────────────────────────────
 * { box-sizing: border-box; }
 
-.devspace-card {
-  border-radius: 12px;
-  transition: box-shadow 0.2s;
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+  background: var(--ds-bg-0);
+  color: var(--ds-text-1);
+  -webkit-font-smoothing: antialiased;
 }
-.devspace-card:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.12); }
 
-.tag-chip {
-  font-size: 11px;
-  padding: 2px 8px;
-  border-radius: 20px;
+// ── Layout ───────────────────────────────────────────────────
+.q-layout {
+  background: var(--ds-bg-0) !important;
+}
+
+// Header
+.q-header {
+  background: var(--ds-bg-1) !important;
+  border-bottom: 1px solid var(--ds-border) !important;
+  box-shadow: none !important;
+
+  .q-toolbar {
+    min-height: 52px;
+    padding: 0 16px;
+  }
+
+  .q-toolbar__title {
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    color: var(--ds-text-1);
+
+   
+  }
+
+  .q-btn {
+    color: var(--ds-text-2) !important;
+    transition: color var(--ds-transition);
+    &:hover { color: var(--ds-text-1) !important; }
+  }
+}
+
+// Drawer / Sidebar
+.q-drawer {
+  background: var(--ds-bg-1) !important;
+  border-right: 1px solid var(--ds-border) !important;
+
+  .q-item-label--header {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ds-text-3) !important;
+    padding: 16px 12px 6px;
+  }
+
+  .q-item {
+    border-radius: var(--ds-radius-sm);
+    margin: 1px 8px;
+    min-height: 34px;
+    padding: 0 10px;
+    color: var(--ds-text-2) !important;
+    transition: background var(--ds-transition), color var(--ds-transition);
+
+    &:hover {
+      background: var(--ds-bg-hover) !important;
+      color: var(--ds-text-1) !important;
+    }
+
+    &.q-router-link--active,
+    &.q-item--active {
+      background: var(--ds-orange-dim) !important;
+      color: var(--ds-orange) !important;
+      border-left: 2px solid var(--ds-orange);
+      padding-left: 8px;
+
+      .q-icon { color: var(--ds-orange) !important; }
+    }
+
+    .q-item__section--avatar {
+      min-width: 32px;
+      .q-icon { font-size: 16px; }
+    }
+
+    .q-item__label { font-size: 13px; font-weight: 500; }
+  }
+
+  .q-separator { background: var(--ds-border) !important; margin: 6px 0; }
+}
+
+// Page container
+.q-page-container {
+  background: var(--ds-bg-0) !important;
+}
+
+.q-page {
+  background: var(--ds-bg-0) !important;
+}
+
+// ── Cards ────────────────────────────────────────────────────
+.q-card, .devspace-card {
+  background: var(--ds-bg-1) !important;
+  border: 1px solid var(--ds-border) !important;
+  border-radius: var(--ds-radius) !important;
+  box-shadow: var(--ds-shadow) !important;
+  transition: border-color var(--ds-transition), transform var(--ds-transition), box-shadow var(--ds-transition);
+
+  &:hover {
+    border-color: var(--ds-border-md) !important;
+    transform: translateY(-1px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.20) !important;
+  }
+}
+
+// ── Buttons ──────────────────────────────────────────────────
+.q-btn {
+  border-radius: var(--ds-radius-sm) !important;
+  font-weight: 500 !important;
+  font-size: 13px !important;
+  letter-spacing: 0 !important;
+  text-transform: none !important;
+  transition: all var(--ds-transition) !important;
+
+  &.bg-primary, &[color="primary"] {
+    background: var(--ds-orange) !important;
+    color: #fff !important;
+    box-shadow: 0 0 0 0 var(--ds-orange-glow) !important;
+
+    &:hover {
+      background: var(--ds-secondary) !important;
+      box-shadow: 0 0 16px var(--ds-orange-glow) !important;
+    }
+  }
+
+  &.q-btn--flat {
+    &:hover { background: var(--ds-bg-hover) !important; }
+  }
+}
+
+// ── Inputs ───────────────────────────────────────────────────
+.q-field {
+  &__control {
+    background: var(--ds-bg-2) !important;
+    border-radius: var(--ds-radius-sm) !important;
+  }
+
+  &--outlined .q-field__control {
+    border-color: var(--ds-border-md) !important;
+
+    &:hover { border-color: var(--ds-orange) !important; }
+  }
+
+  &--focused .q-field__control {
+    border-color: var(--ds-orange) !important;
+    box-shadow: 0 0 0 2px var(--ds-orange-dim) !important;
+  }
+
+  &__label { color: var(--ds-text-2) !important; font-size: 13px !important; }
+  &__native { color: var(--ds-text-1) !important; font-size: 13px !important; }
+}
+
+// Code input (comandos)
+.code-input {
+  .q-field__native {
+    font-family: 'JetBrains Mono', monospace !important;
+    font-size: 12px !important;
+    color: var(--ds-orange) !important;
+  }
+  .q-field__control {
+    background: var(--ds-bg-0) !important;
+    border-color: var(--ds-border-md) !important;
+  }
+}
+
+// ── Dialogs / Modals ─────────────────────────────────────────
+.q-dialog__inner {
+  .q-card {
+    background: var(--ds-bg-2) !important;
+    border: 1px solid var(--ds-border-md) !important;
+    border-radius: 12px !important;
+    box-shadow: 0 24px 48px rgba(0,0,0,0.40) !important;
+
+    &:hover {
+      transform: none !important;
+      box-shadow: 0 24px 48px rgba(0,0,0,0.40) !important;
+    }
+  }
+}
+
+// ── Menus / Dropdowns ────────────────────────────────────────
+.q-menu {
+  background: var(--ds-bg-2) !important;
+  border: 1px solid var(--ds-border-md) !important;
+  border-radius: var(--ds-radius) !important;
+  box-shadow: 0 12px 32px rgba(0,0,0,0.32) !important;
+
+  .q-item {
+    font-size: 13px !important;
+    min-height: 32px !important;
+    color: var(--ds-text-1) !important;
+    border-radius: 4px;
+    margin: 2px 4px;
+
+    &:hover { background: var(--ds-bg-hover) !important; }
+  }
+}
+
+// ── Select ───────────────────────────────────────────────────
+.q-select__dropdown-icon { color: var(--ds-text-2) !important; }
+
+// ── Badges / Chips / Tags ────────────────────────────────────
+.q-badge {
+  border-radius: 4px !important;
+  font-size: 11px !important;
+  font-weight: 500 !important;
+  padding: 2px 7px !important;
+}
+
+.q-chip {
+  background: var(--ds-orange-dim) !important;
+  border: 1px solid rgba(249,115,22,0.20) !important;
+  color: var(--ds-orange) !important;
+  border-radius: 4px !important;
+  font-size: 11px !important;
+  font-weight: 500 !important;
+  height: 20px !important;
+
+  &__content { padding: 0 6px !important; }
+}
+
+// ── Separators ───────────────────────────────────────────────
+.q-separator { background: var(--ds-border) !important; }
+
+// ── Scrollbar ────────────────────────────────────────────────
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: var(--ds-border-md);
+  border-radius: 2px;
+  &:hover { background: var(--ds-text-3); }
+}
+
+// ── Notify ───────────────────────────────────────────────────
+.q-notification {
+  border-radius: var(--ds-radius) !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.28) !important;
+}
+
+// ── Kanban columns ───────────────────────────────────────────
+.kanban-col {
+  min-width: 280px;
+  background: var(--ds-bg-1);
+  border: 1px solid var(--ds-border);
+  border-radius: var(--ds-radius);
+  padding: 12px;
+
+  .kanban-header {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ds-text-2);
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--ds-border);
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .task-card {
+    background: var(--ds-bg-2) !important;
+    border: 1px solid var(--ds-border) !important;
+    border-radius: var(--ds-radius-sm) !important;
+    padding: 10px 12px !important;
+    margin-bottom: 6px;
+    cursor: pointer;
+    transition: border-color var(--ds-transition), transform var(--ds-transition);
+
+    &:hover {
+      border-color: var(--ds-border-md) !important;
+      transform: translateY(-1px);
+    }
+  }
+}
+
+// ── Command cards ────────────────────────────────────────────
+.command-card {
+  background: var(--ds-bg-1) !important;
+  border: 1px solid var(--ds-border) !important;
+  border-radius: var(--ds-radius) !important;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--ds-orange), transparent);
+  }
+
+  .command-snippet {
+    background: var(--ds-bg-0) !important;
+    border: 1px solid var(--ds-border) !important;
+    border-radius: var(--ds-radius-sm) !important;
+    padding: 10px 12px !important;
+    font-family: 'JetBrains Mono', monospace !important;
+    font-size: 12px !important;
+    color: var(--ds-orange) !important;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+
+    &::before {
+      content: '$';
+      color: var(--ds-text-3);
+      font-family: 'JetBrains Mono', monospace;
+      flex-shrink: 0;
+    }
+  }
+}
+
+// ── Auth pages ───────────────────────────────────────────────
+.auth-card {
+  background: var(--ds-bg-1) !important;
+  border: 1px solid var(--ds-border-md) !important;
+  border-radius: 14px !important;
+  box-shadow: 0 32px 64px rgba(0,0,0,0.36) !important;
+
+  &:hover { transform: none !important; }
+
+  .auth-logo {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--ds-orange);
+    letter-spacing: -0.02em;
+
+    span { color: var(--ds-text-1); }
+  }
+}
+
+// ── Project cards ────────────────────────────────────────────
+.project-card {
+  background: var(--ds-bg-1) !important;
+  border: 1px solid var(--ds-border) !important;
+  border-radius: var(--ds-radius) !important;
+  cursor: pointer;
+  transition: border-color var(--ds-transition), transform var(--ds-transition), box-shadow var(--ds-transition);
+  position: relative;
+  overflow: hidden;
+
+  &:hover {
+    border-color: var(--ds-border-md) !important;
+    transform: translateY(-2px);
+    box-shadow: 0 12px 28px rgba(0,0,0,0.22) !important;
+  }
+
+  .project-color-bar {
+    position: absolute;
+    top: 0; left: 0; bottom: 0;
+    width: 3px;
+  }
+}
+
+// ── List items ───────────────────────────────────────────────
+.q-list {
+  background: var(--ds-bg-1) !important;
+  border-color: var(--ds-border) !important;
+  border-radius: var(--ds-radius) !important;
+
+  .q-item {
+    color: var(--ds-text-1) !important;
+    &:hover { background: var(--ds-bg-hover) !important; }
+  }
+
+  .q-item__label--caption { color: var(--ds-text-2) !important; font-size: 12px !important; }
+}
+
+// ── Page titles ──────────────────────────────────────────────
+.ds-page-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--ds-text-1);
+  letter-spacing: -0.02em;
+}
+
+// ── Spinner ──────────────────────────────────────────────────
+.q-spinner { color: var(--ds-orange) !important; }
+
+// ── Linear progress ──────────────────────────────────────────
+.q-linear-progress__track { background: var(--ds-border) !important; }
+
+// ── Tooltips ─────────────────────────────────────────────────
+.q-tooltip {
+  background: var(--ds-bg-2) !important;
+  color: var(--ds-text-1) !important;
+  border: 1px solid var(--ds-border-md) !important;
+  font-size: 12px !important;
+  border-radius: var(--ds-radius-sm) !important;
+}
+
+// ── Banner ───────────────────────────────────────────────────
+.q-banner {
+  background: var(--ds-bg-2) !important;
+  border: 1px solid var(--ds-border-md) !important;
+  border-radius: var(--ds-radius) !important;
 }

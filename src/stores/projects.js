@@ -9,28 +9,31 @@ export const useProjectsStore = defineStore('projects', () => {
 
   async function fetchAll() {
     loading.value = true
-    const { data } = await api.get('/api/projects')
-    projects.value = data
-    loading.value = false
+    try {
+      const { data } = await api.get('/api/projects')
+      projects.value = data.projects
+    } finally {
+      loading.value = false
+    }
   }
 
   async function fetchOne(id) {
     const { data } = await api.get(`/api/projects/${id}`)
-    current.value = data
-    return data
+    current.value = data.project
+    return data.project
   }
 
   async function create(payload) {
     const { data } = await api.post('/api/projects', payload)
-    projects.value.unshift(data)
-    return data
+    projects.value.unshift(data.project)
+    return data.project
   }
 
   async function update(id, payload) {
-    const { data } = await api.patch(`/api/projects/${id}`, payload)
+    const { data } = await api.put(`/api/projects/${id}`, payload)
     const idx = projects.value.findIndex(p => p.id === id)
-    if (idx !== -1) projects.value[idx] = data
-    return data
+    if (idx !== -1) projects.value[idx] = data.project
+    return data.project
   }
 
   async function remove(id) {

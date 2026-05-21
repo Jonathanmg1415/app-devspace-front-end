@@ -1,9 +1,16 @@
-$primary   : #467886;
-$secondary : #145f62;
-$accent    : #9C27B0;
-$dark      : #1d1d1d;
-$dark-page : #121212;
-$positive  : #21BA45;
-$negative  : #C10015;
-$info      : #31CCEC;
-$warning   : #F2C037;
+// ── DevSpace Design Tokens ──────────────────────────────────
+
+// Accent naranja (color de acción)
+$primary   : #F97316;
+$secondary : #EA580C;
+$accent    : #FB923C;
+
+// Semánticos
+$positive  : #22C55E;
+$negative  : #EF4444;
+$info      : #38BDF8;
+$warning   : #FBBF24;
+
+// Dark base
+$dark      : #0B0B0D;
+$dark-page : #0B0B0D;

@@ -8,22 +8,25 @@ export const useNotesStore = defineStore('notes', () => {
 
   async function fetchAll(projectId) {
     loading.value = true
-    const { data } = await api.get(`/api/projects/${projectId}/notes`)
-    items.value = data
-    loading.value = false
+    try {
+      const { data } = await api.get(`/api/projects/${projectId}/notes`)
+      items.value = data.notes ?? []
+    } finally {
+      loading.value = false
+    }
   }
 
   async function create(projectId, payload) {
     const { data } = await api.post(`/api/projects/${projectId}/notes`, payload)
-    items.value.unshift(data)
-    return data
+    items.value.unshift(data.nota)
+    return data.nota
   }
 
   async function update(id, payload) {
-    const { data } = await api.patch(`/api/notes/${id}`, payload)
+    const { data } = await api.put(`/api/notes/${id}`, payload)
     const idx = items.value.findIndex(i => i.id === id)
-    if (idx !== -1) items.value[idx] = data
-    return data
+    if (idx !== -1) items.value[idx] = data.nota
+    return data.nota
   }
 
   async function remove(id) {

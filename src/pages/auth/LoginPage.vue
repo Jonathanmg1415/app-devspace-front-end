@@ -1,30 +1,74 @@
 <template>
-  <q-card style="min-width: 360px" class="q-pa-lg">
-    <q-card-section class="text-center q-pb-none">
-      <div class="text-h5 text-weight-bold text-primary">DevSpace</div>
-      <div class="text-subtitle2 text-grey-6">{{ t('auth.login') }}</div>
-    </q-card-section>
+  <q-card class="auth-card" style="width: 380px">
+    <q-card-section class="q-pa-xl">
+      <div class="q-mb-lg flex flex-center">
+        <img
+          src="/favicon.png"
+          style="height: 48px; width: 48px; border-radius: 50%"
+        />
+      </div>
+      <div
+        style="
+          font-size: 20px;
+          font-weight: 700;
+          text-align: center;
+          margin-bottom: 4px;
+          color: var(--ds-text-1);
+        "
+      >
+        Dev<span style="color: var(--ds-orange)">Space</span>
+      </div>
+      <div
+        class="q-mb-xl"
+        style="font-size: 13px; color: var(--ds-text-2); text-align: center"
+      >
+        Tu workspace técnico personal
+      </div>
+      <div class="q-mb-xl" style="font-size: 13px; color: var(--ds-text-2)">
+        Tu workspace técnico personal
+      </div>
 
-    <q-card-section>
       <q-form @submit="handleLogin" class="q-gutter-md">
         <q-input
           v-model="email"
-          :label="t('auth.email')"
+          label="Email"
           type="email"
-          outlined dense
-          :rules="[v => !!v || 'Requerido']"
-        />
+          outlined
+          dense
+          autocomplete="email"
+          :rules="[(v) => !!v || 'Requerido']"
+        >
+          <template #prepend>
+            <q-icon
+              name="alternate_email"
+              size="16px"
+              style="color: var(--ds-text-3)"
+            />
+          </template>
+        </q-input>
+
         <q-input
           v-model="password"
-          :label="t('auth.password')"
+          label="Contraseña"
           :type="showPwd ? 'text' : 'password'"
-          outlined dense
-          :rules="[v => !!v || 'Requerido']"
+          outlined
+          dense
+          autocomplete="current-password"
+          :rules="[(v) => !!v || 'Requerido']"
         >
+          <template #prepend>
+            <q-icon
+              name="lock_outline"
+              size="16px"
+              style="color: var(--ds-text-3)"
+            />
+          </template>
           <template #append>
             <q-icon
               :name="showPwd ? 'visibility_off' : 'visibility'"
+              size="16px"
               class="cursor-pointer"
+              style="color: var(--ds-text-3)"
               @click="showPwd = !showPwd"
             />
           </template>
@@ -32,48 +76,61 @@
 
         <q-btn
           type="submit"
-          :label="t('auth.login')"
+          label="Iniciar sesión"
           color="primary"
-          class="full-width"
+          class="full-width q-mt-sm"
           :loading="loading"
+          style="height: 40px; font-size: 13px"
         />
       </q-form>
-    </q-card-section>
 
-    <q-card-section class="text-center q-pt-none">
-      <router-link to="/auth/register" class="text-primary text-caption">
-        ¿No tienes cuenta? Regístrate
-      </router-link>
+      <div
+        class="q-mt-lg text-center"
+        style="font-size: 13px; color: var(--ds-text-2)"
+      >
+        ¿No tienes cuenta?
+        <router-link
+          to="/auth/register"
+          style="
+            color: var(--ds-orange);
+            text-decoration: none;
+            font-weight: 500;
+          "
+        >
+          Regístrate
+        </router-link>
+      </div>
     </q-card-section>
   </q-card>
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
-import { useI18n } from 'vue-i18n'
-import { useQuasar } from 'quasar'
-import { useAuthStore } from 'src/stores/auth'
+import { ref } from "vue";
+import { useRouter } from "vue-router";
+import { useQuasar } from "quasar";
+import { useAuthStore } from "src/stores/auth";
 
-const { t } = useI18n()
-const $q = useQuasar()
-const router = useRouter()
-const auth = useAuthStore()
+const $q = useQuasar();
+const router = useRouter();
+const auth = useAuthStore();
 
-const email    = ref('')
-const password = ref('')
-const showPwd  = ref(false)
-const loading  = ref(false)
+const email = ref("");
+const password = ref("");
+const showPwd = ref(false);
+const loading = ref(false);
 
 async function handleLogin() {
-  loading.value = true
+  loading.value = true;
   try {
-    await auth.login(email.value, password.value)
-    router.push('/projects')
+    await auth.login(email.value, password.value);
+    router.push("/projects");
   } catch (err) {
-    $q.notify({ type: 'negative', message: err.response?.data?.error || 'Error al iniciar sesión' })
+    $q.notify({
+      type: "negative",
+      message: err.response?.data?.error || "Credenciales incorrectas",
+    });
   } finally {
-    loading.value = false
+    loading.value = false;
   }
 }
 </script>

@@ -1,48 +1,68 @@
 <template>
   <q-page padding>
     <div class="row items-center q-mb-lg">
-      <div class="text-h6 text-weight-bold col">{{ t('commands.title') }}</div>
-      <q-btn color="primary" icon="add" :label="t('commands.new')" @click="openForm = true" />
+      <div class="col">
+        <div class="ds-page-title">Comandos</div>
+        <div style="font-size:12px; color:var(--ds-text-3); margin-top:2px">
+          {{ items.length }} snippet{{ items.length !== 1 ? 's' : '' }}
+        </div>
+      </div>
+      <q-btn color="primary" icon="add" label="Nuevo comando" size="sm"
+        style="height:34px" @click="openForm = true" />
     </div>
 
     <div class="row q-gutter-md">
-      <q-card v-for="cmd in items" :key="cmd.id" class="devspace-card col-12 col-md-5" flat bordered>
-        <q-card-section>
-          <div class="row items-center q-mb-xs">
-            <div class="text-weight-bold col">{{ cmd.title }}</div>
-            <q-btn flat round dense size="sm" icon="delete" color="negative" @click="confirmDelete(cmd)" />
+      <div v-for="cmd in items" :key="cmd.id" class="command-card col-12 col-md-5">
+        <div style="padding:16px">
+          <div class="row items-start no-wrap q-mb-xs">
+            <div class="col">
+              <div style="font-size:13px; font-weight:600; color:var(--ds-text-1)">{{ cmd.title }}</div>
+              <div v-if="cmd.description" style="font-size:11px; color:var(--ds-text-2); margin-top:2px">
+                {{ cmd.description }}
+              </div>
+            </div>
+            <q-btn flat round dense size="xs" icon="delete_outline"
+              style="color:var(--ds-text-3)" @click="confirmDelete(cmd)" />
           </div>
-          <div v-if="cmd.description" class="text-caption text-grey-6 q-mb-sm">{{ cmd.description }}</div>
-          <q-input
-            :model-value="cmd.command"
-            readonly dense outlined
-            class="code-input"
-            bg-color="grey-2"
-          >
-            <template #append>
-              <q-btn flat round dense icon="content_copy" size="sm" @click="copyCmd(cmd.command)">
-                <q-tooltip>{{ t('common.copy') }}</q-tooltip>
-              </q-btn>
-            </template>
-          </q-input>
-          <div class="q-mt-xs">
-            <q-chip v-for="tag in cmd.tags" :key="tag" dense size="sm" color="primary" text-color="white">{{ tag }}</q-chip>
+
+          <!-- Command snippet -->
+          <div class="command-snippet q-mt-sm" @click="copyCmd(cmd.command)" style="cursor:pointer">
+            <span style="flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap">{{ cmd.command }}</span>
+            <q-btn flat round dense size="xs" icon="content_copy"
+              style="color:var(--ds-text-3); flex-shrink:0; margin:-4px"
+              @click.stop="copyCmd(cmd.command)">
+              <q-tooltip>Copiar</q-tooltip>
+            </q-btn>
           </div>
-        </q-card-section>
-      </q-card>
+
+          <div v-if="cmd.tags?.length" class="row q-mt-sm" style="gap:4px; flex-wrap:wrap">
+            <span v-for="tag in cmd.tags" :key="tag" class="ds-tag">{{ tag }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div v-if="!items.length && !loading"
+      class="flex flex-center column q-py-xl" style="color:var(--ds-text-3)">
+      <q-icon name="terminal" size="48px" style="opacity:0.3" />
+      <p class="q-mt-md" style="font-size:14px">No hay comandos aún</p>
     </div>
 
     <q-dialog v-model="openForm" persistent>
-      <q-card style="min-width: 360px">
-        <q-card-section><div class="text-h6">{{ t('commands.new') }}</div></q-card-section>
-        <q-card-section class="q-gutter-sm">
-          <q-input v-model="form.title"       label="Título"      outlined dense />
-          <q-input v-model="form.command"     :label="t('commands.command')"     outlined dense font="monospace" />
-          <q-input v-model="form.description" :label="t('commands.description')" outlined dense />
+      <q-card style="width:420px; max-width:95vw">
+        <q-card-section style="padding:24px 24px 0">
+          <div style="font-size:15px; font-weight:600; color:var(--ds-text-1)">Nuevo comando</div>
         </q-card-section>
-        <q-card-actions align="right">
-          <q-btn flat label="Cancelar" v-close-popup />
-          <q-btn color="primary" label="Crear" :loading="saving" @click="handleCreate" />
+        <q-card-section style="padding:16px 24px" class="q-gutter-sm">
+          <q-input v-model="form.title"       label="Título"      outlined dense />
+          <q-input v-model="form.command"     label="Comando"     outlined dense
+            style="font-family:'JetBrains Mono',monospace" />
+          <q-input v-model="form.description" label="Descripción" outlined dense />
+        </q-card-section>
+        <q-card-actions align="right" style="padding:0 24px 20px; gap:8px">
+          <q-btn flat label="Cancelar" size="sm" v-close-popup style="color:var(--ds-text-2)" />
+          <q-btn color="primary" label="Crear" size="sm" :loading="saving"
+            style="min-width:72px; height:34px" @click="handleCreate" />
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -52,21 +72,19 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
-import { useI18n } from 'vue-i18n'
 import { useQuasar } from 'quasar'
 import { useCommandsStore } from 'src/stores/commands'
 import { storeToRefs } from 'pinia'
 
-const { t } = useI18n()
 const $q = useQuasar()
 const route = useRoute()
 const store = useCommandsStore()
-const { items } = storeToRefs(store)
+const { items, loading } = storeToRefs(store)
 
 const projectId = computed(() => route.params.id)
-const openForm = ref(false)
-const saving   = ref(false)
-const form     = ref({ title: '', command: '', description: '' })
+const openForm  = ref(false)
+const saving    = ref(false)
+const form      = ref({ title: '', command: '', description: '' })
 
 onMounted(() => store.fetchAll(projectId.value))
 
@@ -82,7 +100,8 @@ async function handleCreate() {
 
 function copyCmd(text) {
   navigator.clipboard.writeText(text)
-  $q.notify({ type: 'positive', message: t('common.copied'), timeout: 1000 })
+  $q.notify({ message: 'Copiado', timeout: 800,
+    color: 'grey-9', textColor: 'white', position: 'bottom' })
 }
 
 function confirmDelete(cmd) {
@@ -90,3 +109,13 @@ function confirmDelete(cmd) {
     .onOk(() => store.remove(cmd.id))
 }
 </script>
+
+<style scoped>
+.ds-tag {
+  font-size: 10px; font-weight: 500;
+  padding: 1px 6px; border-radius: 3px;
+  background: var(--ds-orange-dim);
+  border: 1px solid rgba(249,115,22,0.20);
+  color: var(--ds-orange);
+}
+</style>

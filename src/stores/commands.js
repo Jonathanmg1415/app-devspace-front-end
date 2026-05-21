@@ -8,22 +8,25 @@ export const useCommandsStore = defineStore('commands', () => {
 
   async function fetchAll(projectId) {
     loading.value = true
-    const { data } = await api.get(`/api/projects/${projectId}/commands`)
-    items.value = data
-    loading.value = false
+    try {
+      const { data } = await api.get(`/api/projects/${projectId}/commands`)
+      items.value = data.commands ?? []
+    } finally {
+      loading.value = false
+    }
   }
 
   async function create(projectId, payload) {
     const { data } = await api.post(`/api/projects/${projectId}/commands`, payload)
-    items.value.unshift(data)
-    return data
+    items.value.unshift(data.comando)
+    return data.comando
   }
 
   async function update(id, payload) {
-    const { data } = await api.patch(`/api/commands/${id}`, payload)
+    const { data } = await api.put(`/api/commands/${id}`, payload)
     const idx = items.value.findIndex(i => i.id === id)
-    if (idx !== -1) items.value[idx] = data
-    return data
+    if (idx !== -1) items.value[idx] = data.comando
+    return data.comando
   }
 
   async function remove(id) {

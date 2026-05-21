@@ -1,62 +1,239 @@
 <template>
   <q-layout view="lHh Lpr lFf">
-    <q-header elevated>
+    <q-header>
       <q-toolbar>
-        <q-btn flat round dense icon="menu" @click="drawer = !drawer" />
+        <q-btn
+          flat
+          round
+          dense
+          icon="menu"
+          size="sm"
+          @click="drawer = !drawer"
+          style="color: var(--ds-text-2)"
+        />
+
         <q-toolbar-title>
-          <span class="text-weight-bold">DevSpace</span>
+          <img
+            src="/favicon.png"
+            style="
+              height: 28px;
+              width: 28px;
+              border-radius: 50%;
+              vertical-align: middle;
+            "
+          />
+          <span
+            style="
+              margin-left: 8px;
+              font-size: 15px;
+              font-weight: 600;
+              letter-spacing: -0.01em;
+            "
+          >
+            Dev<span style="color: var(--ds-orange)">Space</span>
+          </span>
         </q-toolbar-title>
 
-        <q-btn flat round icon="search" :to="{ path: '/search' }" />
+        <!-- Search pill -->
+        <q-btn
+          flat
+          rounded
+          dense
+          @click="router.push('/search')"
+          style="
+            color: var(--ds-text-2);
+            background: var(--ds-bg-2);
+            border: 1px solid var(--ds-border);
+            padding: 0 12px;
+            height: 30px;
+            font-size: 12px;
+            gap: 6px;
+            margin-right: 8px;
+          "
+        >
+          <q-icon name="search" size="14px" />
+          Buscar...
+          <span
+            style="
+              font-size: 10px;
+              color: var(--ds-text-3);
+              font-family: &quot;JetBrains Mono&quot;, monospace;
+              margin-left: 4px;
+            "
+            >⌘K</span
+          >
+        </q-btn>
 
-        <q-btn flat round>
-          <q-icon name="brightness_6" />
-          <q-tooltip>{{ $q.dark.isActive ? 'Modo claro' : 'Modo oscuro' }}</q-tooltip>
+        <!-- Dark mode toggle -->
+        <q-btn flat round dense size="sm" style="color: var(--ds-text-2)">
+          <q-icon
+            :name="$q.dark.isActive ? 'light_mode' : 'dark_mode'"
+            size="16px"
+          />
           <q-menu>
-            <q-list style="min-width: 150px">
-              <q-item clickable v-close-popup @click="$q.dark.set(false)">
-                <q-item-section>Claro</q-item-section>
+            <q-list style="min-width: 140px; padding: 4px">
+              <q-item
+                clickable
+                v-close-popup
+                @click="$q.dark.set(false)"
+                style="border-radius: 6px"
+              >
+                <q-item-section avatar style="min-width: 28px"
+                  ><q-icon name="light_mode" size="14px"
+                /></q-item-section>
+                <q-item-section style="font-size: 13px">Claro</q-item-section>
               </q-item>
-              <q-item clickable v-close-popup @click="$q.dark.set(true)">
-                <q-item-section>Oscuro</q-item-section>
+              <q-item
+                clickable
+                v-close-popup
+                @click="$q.dark.set(true)"
+                style="border-radius: 6px"
+              >
+                <q-item-section avatar style="min-width: 28px"
+                  ><q-icon name="dark_mode" size="14px"
+                /></q-item-section>
+                <q-item-section style="font-size: 13px">Oscuro</q-item-section>
               </q-item>
-              <q-item clickable v-close-popup @click="$q.dark.set('auto')">
-                <q-item-section>Sistema</q-item-section>
+              <q-item
+                clickable
+                v-close-popup
+                @click="$q.dark.set('auto')"
+                style="border-radius: 6px"
+              >
+                <q-item-section avatar style="min-width: 28px"
+                  ><q-icon name="brightness_auto" size="14px"
+                /></q-item-section>
+                <q-item-section style="font-size: 13px">Sistema</q-item-section>
               </q-item>
             </q-list>
           </q-menu>
         </q-btn>
 
-        <q-btn flat round icon="logout" @click="handleLogout" />
+        <!-- User menu -->
+        <q-btn
+          flat
+          round
+          dense
+          size="sm"
+          style="color: var(--ds-text-2); margin-left: 4px"
+        >
+          <q-avatar
+            size="26px"
+            :style="{
+              background: 'var(--ds-orange)',
+              color: '#fff',
+              fontSize: '11px',
+              fontWeight: '600',
+            }"
+          >
+            {{ userInitial }}
+          </q-avatar>
+          <q-menu>
+            <q-list style="min-width: 160px; padding: 4px">
+              <q-item style="padding: 8px 12px; pointer-events: none">
+                <q-item-section>
+                  <div
+                    style="
+                      font-size: 12px;
+                      font-weight: 600;
+                      color: var(--ds-text-1);
+                    "
+                  >
+                    {{ auth.user?.name }}
+                  </div>
+                  <div style="font-size: 11px; color: var(--ds-text-3)">
+                    {{ auth.user?.email }}
+                  </div>
+                </q-item-section>
+              </q-item>
+              <q-separator style="margin: 4px 0" />
+              <q-item
+                clickable
+                v-close-popup
+                @click="handleLogout"
+                style="border-radius: 6px; color: var(--ds-negative)"
+              >
+                <q-item-section avatar style="min-width: 28px"
+                  ><q-icon name="logout" size="14px"
+                /></q-item-section>
+                <q-item-section style="font-size: 13px"
+                  >Cerrar sesión</q-item-section
+                >
+              </q-item>
+            </q-list>
+          </q-menu>
+        </q-btn>
       </q-toolbar>
     </q-header>
 
-    <q-drawer v-model="drawer" show-if-above bordered :width="220">
-      <q-scroll-area class="fit">
-        <q-list padding>
-          <q-item-label header>{{ t('nav.projects') }}</q-item-label>
-          <q-item clickable v-ripple :to="{ path: '/projects' }" exact>
-            <q-item-section avatar><q-icon name="folder" /></q-item-section>
-            <q-item-section>{{ t('nav.projects') }}</q-item-section>
+    <q-drawer v-model="drawer" show-if-above :width="210" :breakpoint="768">
+      <q-scroll-area class="fit" style="padding-top: 8px">
+        <q-list>
+          <!-- All projects -->
+          <div class="sidebar-section-label">Workspace</div>
+          <q-item
+            clickable
+            v-ripple
+            :to="{ path: '/projects' }"
+            exact
+            class="sidebar-item"
+          >
+            <q-item-section avatar
+              ><q-icon name="grid_view" size="15px"
+            /></q-item-section>
+            <q-item-section>Proyectos</q-item-section>
           </q-item>
 
+          <q-item
+            clickable
+            v-ripple
+            :to="{ path: '/search' }"
+            class="sidebar-item"
+          >
+            <q-item-section avatar
+              ><q-icon name="search" size="15px"
+            /></q-item-section>
+            <q-item-section>Buscar</q-item-section>
+          </q-item>
+
+          <!-- Project nav -->
           <template v-if="currentProject">
-            <q-separator spaced />
-            <q-item-label header class="ellipsis" style="max-width:180px">
-              {{ currentProject.name }}
-            </q-item-label>
-            <q-item v-for="item in projectNav" :key="item.path"
-              clickable v-ripple :to="item.to" exact>
-              <q-item-section avatar><q-icon :name="item.icon" /></q-item-section>
-              <q-item-section>{{ t(item.label) }}</q-item-section>
+            <div
+              class="sidebar-section-label q-mt-md"
+              style="display: flex; align-items: center; gap: 6px"
+            >
+              <span
+                style="
+                  display: inline-block;
+                  width: 8px;
+                  height: 8px;
+                  border-radius: 2px;
+                  flex-shrink: 0;
+                "
+                :style="{
+                  background: currentProject.color || 'var(--ds-orange)',
+                }"
+              />
+              <span class="ellipsis" style="max-width: 140px">{{
+                currentProject.name
+              }}</span>
+            </div>
+
+            <q-item
+              v-for="item in projectNav"
+              :key="item.to"
+              clickable
+              v-ripple
+              :to="item.to"
+              exact
+              class="sidebar-item"
+            >
+              <q-item-section avatar
+                ><q-icon :name="item.icon" size="15px"
+              /></q-item-section>
+              <q-item-section>{{ item.label }}</q-item-section>
             </q-item>
           </template>
-
-          <q-separator spaced />
-          <q-item clickable v-ripple :to="{ path: '/search' }">
-            <q-item-section avatar><q-icon name="search" /></q-item-section>
-            <q-item-section>{{ t('nav.search') }}</q-item-section>
-          </q-item>
         </q-list>
       </q-scroll-area>
     </q-drawer>
@@ -68,39 +245,77 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
-import { useRouter, useRoute } from 'vue-router'
-import { useI18n } from 'vue-i18n'
-import { useQuasar } from 'quasar'
-import { useAuthStore } from 'src/stores/auth'
-import { useProjectsStore } from 'src/stores/projects'
+import { ref, computed } from "vue";
+import { useRouter, useRoute } from "vue-router";
+import { useQuasar } from "quasar";
+import { useAuthStore } from "src/stores/auth";
+import { useProjectsStore } from "src/stores/projects";
 
-const { t } = useI18n()
-const $q = useQuasar()
-const router = useRouter()
-const route  = useRoute()
-const auth   = useAuthStore()
-const projectsStore = useProjectsStore()
+const $q = useQuasar();
+const router = useRouter();
+const route = useRoute();
+const auth = useAuthStore();
+const projectsStore = useProjectsStore();
 
-const drawer = ref(false)
+const drawer = ref(false);
+
+const userInitial = computed(() => auth.user?.name?.[0]?.toUpperCase() || "?");
 
 const currentProject = computed(() =>
-  route.params.id ? projectsStore.projects.find(p => p.id == route.params.id) : null
-)
+  route.params.id
+    ? projectsStore.projects.find((p) => p.id == route.params.id)
+    : null,
+);
 
 const projectNav = computed(() => {
-  const id = route.params.id
+  const id = route.params.id;
   return [
-    { label: 'nav.tasks',    icon: 'task_alt',     to: `/projects/${id}/tasks` },
-    { label: 'nav.links',    icon: 'link',          to: `/projects/${id}/links` },
-    { label: 'nav.commands', icon: 'terminal',      to: `/projects/${id}/commands` },
-    { label: 'nav.notes',    icon: 'description',   to: `/projects/${id}/notes` },
-    { label: 'nav.cards',    icon: 'view_kanban',   to: `/projects/${id}/cards` },
-  ]
-})
+    { label: "Tareas", icon: "task_alt", to: `/projects/${id}/tasks` },
+    { label: "Comandos", icon: "terminal", to: `/projects/${id}/commands` },
+    { label: "Links", icon: "link", to: `/projects/${id}/links` },
+    { label: "Notas", icon: "description", to: `/projects/${id}/notes` },
+    { label: "Cards", icon: "view_kanban", to: `/projects/${id}/cards` },
+    { label: "Archivos", icon: "attach_file", to: `/projects/${id}/files` },
+  ];
+});
 
-async function handleLogout() {
-  auth.logout()
-  router.push('/auth/login')
+function handleLogout() {
+  auth.logout();
+  router.push("/auth/login");
 }
 </script>
+
+<style scoped>
+.sidebar-section-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ds-text-3);
+  padding: 12px 16px 4px;
+}
+
+.sidebar-item {
+  border-radius: 6px !important;
+  margin: 1px 8px !important;
+  min-height: 32px !important;
+  padding: 0 8px !important;
+  font-size: 13px !important;
+  color: var(--ds-text-2) !important;
+  transition:
+    background 120ms ease,
+    color 120ms ease !important;
+}
+
+.sidebar-item:hover {
+  background: var(--ds-bg-hover) !important;
+  color: var(--ds-text-1) !important;
+}
+
+.sidebar-item.q-router-link--active {
+  background: var(--ds-orange-dim) !important;
+  color: var(--ds-orange) !important;
+  border-left: 2px solid var(--ds-orange);
+  padding-left: 6px !important;
+}
+</style>

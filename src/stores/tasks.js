@@ -8,22 +8,25 @@ export const useTasksStore = defineStore('tasks', () => {
 
   async function fetchAll(projectId) {
     loading.value = true
-    const { data } = await api.get(`/api/projects/${projectId}/tasks`)
-    items.value = data
-    loading.value = false
+    try {
+      const { data } = await api.get(`/api/projects/${projectId}/tasks`)
+      items.value = data.tasks ?? []
+    } finally {
+      loading.value = false
+    }
   }
 
   async function create(projectId, payload) {
     const { data } = await api.post(`/api/projects/${projectId}/tasks`, payload)
-    items.value.unshift(data)
-    return data
+    items.value.unshift(data.tarea)
+    return data.tarea
   }
 
   async function update(id, payload) {
-    const { data } = await api.patch(`/api/tasks/${id}`, payload)
+    const { data } = await api.put(`/api/tasks/${id}`, payload)
     const idx = items.value.findIndex(i => i.id === id)
-    if (idx !== -1) items.value[idx] = data
-    return data
+    if (idx !== -1) items.value[idx] = data.tarea
+    return data.tarea
   }
 
   async function remove(id) {
