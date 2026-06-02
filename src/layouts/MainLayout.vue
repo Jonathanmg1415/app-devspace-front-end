@@ -1,159 +1,69 @@
 <template>
   <q-layout view="lHh Lpr lFf">
-    <q-header>
-      <q-toolbar>
-        <q-btn
-          flat
-          round
-          dense
-          icon="menu"
-          size="sm"
-          @click="drawer = !drawer"
-          style="color: var(--ds-text-2)"
-        />
 
-        <q-toolbar-title>
-          <img
-            src="/favicon.png"
-            style="
-              height: 28px;
-              width: 28px;
-              border-radius: 50%;
-              vertical-align: middle;
-            "
-          />
-          <span
-            style="
-              margin-left: 8px;
-              font-size: 15px;
-              font-weight: 600;
-              letter-spacing: -0.01em;
-            "
-          >
-            Dev<span style="color: var(--ds-orange)">Space</span>
-          </span>
+    <q-header>
+      <q-toolbar style="padding: 0 8px; min-height: 48px">
+        <q-btn flat round dense icon="menu" size="sm"
+          @click="drawer = !drawer" style="color:var(--ds-text-2)" />
+
+        <q-toolbar-title style="font-size:14px; font-weight:600; letter-spacing:-0.01em; flex:0 0 auto; padding-right:8px">
+          <img src="/favicon.png" style="height:24px; width:24px; border-radius:50%; vertical-align:middle" />
+          <span style="margin-left:6px">Dev<span style="color:var(--ds-orange)">Space</span></span>
         </q-toolbar-title>
 
-        <!-- Search pill -->
-        <q-btn
-          flat
-          rounded
-          dense
-          @click="router.push('/search')"
-          style="
-            color: var(--ds-text-2);
-            background: var(--ds-bg-2);
-            border: 1px solid var(--ds-border);
-            padding: 0 12px;
-            height: 30px;
-            font-size: 12px;
-            gap: 6px;
-            margin-right: 8px;
-          "
-        >
-          <q-icon name="search" size="14px" />
+        <q-space />
+
+        <!-- Search — solo ícono en móvil -->
+        <q-btn flat round dense size="sm" icon="search"
+          style="color:var(--ds-text-2)"
+          @click="router.push('/search')" class="lt-sm" />
+
+        <!-- Search pill — solo en desktop -->
+        <q-btn flat rounded dense @click="router.push('/search')"
+          class="gt-xs"
+          style="color:var(--ds-text-2); background:var(--ds-bg-2); border:1px solid var(--ds-border); padding:0 10px; height:28px; font-size:12px; gap:6px; margin-right:6px">
+          <q-icon name="search" size="13px" />
           Buscar...
-          <span
-            style="
-              font-size: 10px;
-              color: var(--ds-text-3);
-              font-family: &quot;JetBrains Mono&quot;, monospace;
-              margin-left: 4px;
-            "
-            >⌘K</span
-          >
         </q-btn>
 
-        <!-- Dark mode toggle -->
-        <q-btn flat round dense size="sm" style="color: var(--ds-text-2)">
-          <q-icon
-            :name="$q.dark.isActive ? 'light_mode' : 'dark_mode'"
-            size="16px"
-          />
+        <!-- Dark mode -->
+        <q-btn flat round dense size="sm" style="color:var(--ds-text-2)">
+          <q-icon :name="$q.dark.isActive ? 'light_mode' : 'dark_mode'" size="16px" />
           <q-menu>
-            <q-list style="min-width: 140px; padding: 4px">
-              <q-item clickable v-close-popup @click="setDark(false)">
-                <q-item-section avatar style="min-width: 28px"
-                  ><q-icon name="light_mode" size="14px"
-                /></q-item-section>
-                <q-item-section style="font-size: 13px">Claro</q-item-section>
+            <q-list style="min-width:140px; padding:4px">
+              <q-item clickable v-close-popup @click="setDark(false)" style="border-radius:6px">
+                <q-item-section avatar style="min-width:28px"><q-icon name="light_mode" size="14px" /></q-item-section>
+                <q-item-section style="font-size:13px">Claro</q-item-section>
               </q-item>
-              <q-item
-                clickable
-                v-close-popup
-                @click="setDark(true)"
-                style="border-radius: 6px"
-              >
-                <q-item-section avatar style="min-width: 28px"
-                  ><q-icon name="dark_mode" size="14px"
-                /></q-item-section>
-                <q-item-section style="font-size: 13px">Oscuro</q-item-section>
+              <q-item clickable v-close-popup @click="setDark(true)" style="border-radius:6px">
+                <q-item-section avatar style="min-width:28px"><q-icon name="dark_mode" size="14px" /></q-item-section>
+                <q-item-section style="font-size:13px">Oscuro</q-item-section>
               </q-item>
-              <q-item
-                clickable
-                v-close-popup
-                @click="setDark('auto')"
-                style="border-radius: 6px"
-              >
-                <q-item-section avatar style="min-width: 28px"
-                  ><q-icon name="brightness_auto" size="14px"
-                /></q-item-section>
-                <q-item-section style="font-size: 13px">Sistema</q-item-section>
+              <q-item clickable v-close-popup @click="setDark('auto')" style="border-radius:6px">
+                <q-item-section avatar style="min-width:28px"><q-icon name="brightness_auto" size="14px" /></q-item-section>
+                <q-item-section style="font-size:13px">Sistema</q-item-section>
               </q-item>
             </q-list>
           </q-menu>
         </q-btn>
 
-        <!-- User menu -->
-        <q-btn
-          flat
-          round
-          dense
-          size="sm"
-          style="color: var(--ds-text-2); margin-left: 4px"
-        >
-          <q-avatar
-            size="26px"
-            :style="{
-              background: 'var(--ds-orange)',
-              color: '#fff',
-              fontSize: '11px',
-              fontWeight: '600',
-            }"
-          >
+        <!-- User -->
+        <q-btn flat round dense size="sm" style="color:var(--ds-text-2); margin-left:2px">
+          <q-avatar size="24px" :style="{ background:'var(--ds-orange)', color:'#fff', fontSize:'10px', fontWeight:'600' }">
             {{ userInitial }}
           </q-avatar>
           <q-menu>
-            <q-list style="min-width: 160px; padding: 4px">
-              <q-item style="padding: 8px 12px; pointer-events: none">
+            <q-list style="min-width:160px; padding:4px">
+              <q-item style="padding:8px 12px; pointer-events:none">
                 <q-item-section>
-                  <div
-                    style="
-                      font-size: 12px;
-                      font-weight: 600;
-                      color: var(--ds-text-1);
-                    "
-                  >
-                    {{ auth.user?.name }}
-                  </div>
-                  <div style="font-size: 11px; color: var(--ds-text-3)">
-                    {{ auth.user?.email }}
-                  </div>
+                  <div style="font-size:12px; font-weight:600; color:var(--ds-text-1)">{{ auth.user?.name }}</div>
+                  <div style="font-size:11px; color:var(--ds-text-3)">{{ auth.user?.email }}</div>
                 </q-item-section>
               </q-item>
-              <q-separator style="margin: 4px 0" />
-              <q-item
-                clickable
-                v-close-popup
-                @click="handleLogout"
-                style="border-radius: 6px; color: var(--ds-negative)"
-              >
-                <q-item-section avatar style="min-width: 28px"
-                  ><q-icon name="logout" size="14px"
-                /></q-item-section>
-                <q-item-section style="font-size: 13px"
-                  >Cerrar sesión</q-item-section
-                >
+              <q-separator style="margin:4px 0" />
+              <q-item clickable v-close-popup @click="handleLogout" style="border-radius:6px; color:var(--ds-negative)">
+                <q-item-section avatar style="min-width:28px"><q-icon name="logout" size="14px" /></q-item-section>
+                <q-item-section style="font-size:13px">Cerrar sesión</q-item-section>
               </q-item>
             </q-list>
           </q-menu>
@@ -161,71 +71,28 @@
       </q-toolbar>
     </q-header>
 
-    <q-drawer v-model="drawer" show-if-above :width="210" :breakpoint="768">
-      <q-scroll-area class="fit" style="padding-top: 8px">
+    <q-drawer v-model="drawer" show-if-above :width="200" :breakpoint="768" bordered>
+      <q-scroll-area class="fit" style="padding-top:8px">
         <q-list>
-          <!-- All projects -->
           <div class="sidebar-section-label">Workspace</div>
-          <q-item
-            clickable
-            v-ripple
-            :to="{ path: '/projects' }"
-            exact
-            class="sidebar-item"
-          >
-            <q-item-section avatar
-              ><q-icon name="grid_view" size="15px"
-            /></q-item-section>
+          <q-item clickable v-ripple :to="{ path: '/projects' }" exact class="sidebar-item">
+            <q-item-section avatar><q-icon name="grid_view" size="15px" /></q-item-section>
             <q-item-section>Proyectos</q-item-section>
           </q-item>
-
-          <q-item
-            clickable
-            v-ripple
-            :to="{ path: '/search' }"
-            class="sidebar-item"
-          >
-            <q-item-section avatar
-              ><q-icon name="search" size="15px"
-            /></q-item-section>
+          <q-item clickable v-ripple :to="{ path: '/search' }" class="sidebar-item">
+            <q-item-section avatar><q-icon name="search" size="15px" /></q-item-section>
             <q-item-section>Buscar</q-item-section>
           </q-item>
 
-          <!-- Project nav -->
           <template v-if="currentProject">
-            <div
-              class="sidebar-section-label q-mt-md"
-              style="display: flex; align-items: center; gap: 6px"
-            >
-              <span
-                style="
-                  display: inline-block;
-                  width: 8px;
-                  height: 8px;
-                  border-radius: 2px;
-                  flex-shrink: 0;
-                "
-                :style="{
-                  background: currentProject.color || 'var(--ds-orange)',
-                }"
-              />
-              <span class="ellipsis" style="max-width: 140px">{{
-                currentProject.name
-              }}</span>
+            <div class="sidebar-section-label q-mt-md" style="display:flex;align-items:center;gap:6px">
+              <span style="display:inline-block; width:8px; height:8px; border-radius:2px; flex-shrink:0"
+                :style="{ background: currentProject.color || 'var(--ds-orange)' }" />
+              <span class="ellipsis" style="max-width:130px">{{ currentProject.name }}</span>
             </div>
-
-            <q-item
-              v-for="item in projectNav"
-              :key="item.to"
-              clickable
-              v-ripple
-              :to="item.to"
-              exact
-              class="sidebar-item"
-            >
-              <q-item-section avatar
-                ><q-icon :name="item.icon" size="15px"
-              /></q-item-section>
+            <q-item v-for="item in projectNav" :key="item.to"
+              clickable v-ripple :to="item.to" exact class="sidebar-item">
+              <q-item-section avatar><q-icon :name="item.icon" size="15px" /></q-item-section>
               <q-item-section>{{ item.label }}</q-item-section>
             </q-item>
           </template>
@@ -236,57 +103,58 @@
     <q-page-container>
       <router-view />
     </q-page-container>
+
   </q-layout>
 </template>
 
 <script setup>
-import { ref, computed } from "vue";
-import { useRouter, useRoute } from "vue-router";
-import { useQuasar } from "quasar";
-import { useAuthStore } from "src/stores/auth";
-import { useProjectsStore } from "src/stores/projects";
-import { onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
+import { useQuasar } from 'quasar'
+import { useAuthStore } from 'src/stores/auth'
+import { useProjectsStore } from 'src/stores/projects'
+
+const $q     = useQuasar()
+const router = useRouter()
+const route  = useRoute()
+const auth   = useAuthStore()
+const projectsStore = useProjectsStore()
+
+const drawer = ref(false)
 
 onMounted(async () => {
-  if (auth.token && !auth.user) {
-    await auth.fetchMe()
-  }
+  if (auth.token && !auth.user) await auth.fetchMe()
+  // Restaurar dark mode
+  const saved = localStorage.getItem('devspace_dark')
+  if (saved !== null) $q.dark.set(JSON.parse(saved))
 })
-const $q = useQuasar();
-const router = useRouter();
-const route = useRoute();
-const auth = useAuthStore();
-const projectsStore = useProjectsStore();
 
-const drawer = ref(false);
-
-const userInitial = computed(() => auth.user?.name?.[0]?.toUpperCase() || "?");
+const userInitial = computed(() => auth.user?.name?.[0]?.toUpperCase() || '?')
 
 const currentProject = computed(() =>
-  route.params.id
-    ? projectsStore.projects.find((p) => p.id == route.params.id)
-    : null,
-);
+  route.params.id ? projectsStore.projects.find(p => p.id == route.params.id) : null
+)
 
 const projectNav = computed(() => {
-  const id = route.params.id;
+  const id = route.params.id
   return [
-    { label: "Tareas", icon: "task_alt", to: `/projects/${id}/tasks` },
-    { label: "Comandos", icon: "terminal", to: `/projects/${id}/commands` },
-    { label: "Links", icon: "link", to: `/projects/${id}/links` },
-    { label: "Notas", icon: "description", to: `/projects/${id}/notes` },
-    { label: "Cards", icon: "view_kanban", to: `/projects/${id}/cards` },
-    { label: "Archivos", icon: "attach_file", to: `/projects/${id}/files` },
-  ];
-});
+    { label: 'Tareas',   icon: 'task_alt',   to: `/projects/${id}/tasks` },
+    { label: 'Comandos', icon: 'terminal',   to: `/projects/${id}/commands` },
+    { label: 'Links',    icon: 'link',       to: `/projects/${id}/links` },
+    { label: 'Notas',    icon: 'description',to: `/projects/${id}/notes` },
+    { label: 'Cards',    icon: 'view_kanban',to: `/projects/${id}/cards` },
+    { label: 'Archivos', icon: 'attach_file',to: `/projects/${id}/files` },
+  ]
+})
+
 function setDark(val) {
   $q.dark.set(val)
   localStorage.setItem('devspace_dark', JSON.stringify(val))
 }
 
 function handleLogout() {
-  auth.logout();
-  router.push("/auth/login");
+  auth.logout()
+  router.push('/auth/login')
 }
 </script>
 
@@ -299,7 +167,6 @@ function handleLogout() {
   color: var(--ds-text-3);
   padding: 12px 16px 4px;
 }
-
 .sidebar-item {
   border-radius: 6px !important;
   margin: 1px 8px !important;
@@ -307,16 +174,9 @@ function handleLogout() {
   padding: 0 8px !important;
   font-size: 13px !important;
   color: var(--ds-text-2) !important;
-  transition:
-    background 120ms ease,
-    color 120ms ease !important;
+  transition: background 120ms ease, color 120ms ease !important;
 }
-
-.sidebar-item:hover {
-  background: var(--ds-bg-hover) !important;
-  color: var(--ds-text-1) !important;
-}
-
+.sidebar-item:hover { background: var(--ds-bg-hover) !important; color: var(--ds-text-1) !important; }
 .sidebar-item.q-router-link--active {
   background: var(--ds-orange-dim) !important;
   color: var(--ds-orange) !important;
