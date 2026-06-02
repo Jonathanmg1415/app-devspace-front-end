@@ -76,7 +76,7 @@
         </q-card-section>
         <q-card-section style="padding:16px 24px" class="q-gutter-sm">
           <q-input v-model="form.name" label="Nombre del proyecto" outlined dense />
-          <q-input v-model="form.description" label="Descripción" outlined dense />
+          <q-input v-model="form.description" label="Descripción" outlined type="textarea" rows="3" />
           <q-input v-model="form.color" label="Color" outlined dense>
             <template #append>
               <div :style="{ background: form.color, width:'16px', height:'16px', borderRadius:'4px', cursor:'pointer' }">

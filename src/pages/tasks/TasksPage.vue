@@ -68,7 +68,7 @@
         </q-card-section>
         <q-card-section style="padding:16px 24px" class="q-gutter-sm">
           <q-input v-model="form.title" label="Título" outlined dense />
-          <q-input v-model="form.description" label="Descripción" outlined dense />
+          <q-input v-model="form.description" label="Descripción" outlined dense type="textarea" rows="3" />
           <div class="row q-gutter-sm">
             <q-select v-model="form.status" :options="statuses" label="Estado" outlined dense emit-value map-options class="col" />
             <q-select v-model="form.priority" :options="priorities" label="Prioridad" outlined dense emit-value map-options class="col" />
