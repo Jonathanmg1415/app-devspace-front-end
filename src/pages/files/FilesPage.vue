@@ -12,25 +12,21 @@
       />
     </div>
 
-    <!-- Upload progress -->
     <q-banner v-if="uploading" rounded class="bg-blue-1 q-mb-md">
       <template #avatar><q-icon name="cloud_upload" color="primary" /></template>
       Subiendo archivo...
       <q-linear-progress :value="progress / 100" color="primary" class="q-mt-sm" />
     </q-banner>
 
-    <!-- Loading -->
     <div v-if="loading" class="flex flex-center q-py-xl">
       <q-spinner size="48px" color="primary" />
     </div>
 
-    <!-- Empty -->
     <div v-else-if="!files.length" class="flex flex-center column q-py-xl text-grey-6">
       <q-icon name="folder_open" size="64px" />
       <p class="q-mt-md">No hay archivos en este proyecto aún.</p>
     </div>
 
-    <!-- Files list -->
     <q-list v-else bordered separator rounded>
       <q-item v-for="file in files" :key="file.id" class="q-py-sm">
         <q-item-section avatar>
@@ -47,21 +43,13 @@
 
         <q-item-section side>
           <div class="row q-gutter-xs">
-            <q-btn
-              flat round dense size="sm"
-              icon="download"
-              :href="file.url"
-              target="_blank"
-              download
-            >
+            <q-btn flat round dense size="sm" icon="download"
+              :loading="downloadingId === file.id"
+              @click="downloadFile(file)">
               <q-tooltip>Descargar</q-tooltip>
             </q-btn>
-            <q-btn
-              flat round dense size="sm"
-              icon="delete"
-              color="negative"
-              @click="confirmDelete(file)"
-            >
+            <q-btn flat round dense size="sm" icon="delete" color="negative"
+              @click="confirmDelete(file)">
               <q-tooltip>Eliminar</q-tooltip>
             </q-btn>
           </div>
@@ -78,14 +66,15 @@ import { useQuasar } from 'quasar'
 import { useFilesStore } from 'src/stores/files'
 import { storeToRefs } from 'pinia'
 
-const $q       = useQuasar()
-const route    = useRoute()
-const store    = useFilesStore()
+const $q    = useQuasar()
+const route = useRoute()
+const store = useFilesStore()
 const { files, loading, uploading } = storeToRefs(store)
 
-const projectId = computed(() => route.params.id)
-const inputRef  = ref(null)
-const progress  = ref(0)
+const projectId    = computed(() => route.params.id)
+const inputRef     = ref(null)
+const progress     = ref(0)
+const downloadingId = ref(null)
 
 onMounted(() => store.fetchAll(projectId.value))
 
@@ -96,7 +85,6 @@ function triggerInput() {
 async function handleFileChange(e) {
   const file = e.target.files[0]
   if (!file) return
-
   progress.value = 0
   try {
     await store.upload(projectId.value, file, (p) => { progress.value = p })
@@ -104,8 +92,27 @@ async function handleFileChange(e) {
   } catch (err) {
     $q.notify({ type: 'negative', message: err.response?.data?.mensaje || 'Error al subir el archivo' })
   } finally {
-    // reset input para permitir subir el mismo archivo de nuevo
     e.target.value = ''
+  }
+}
+
+async function downloadFile(file) {
+  downloadingId.value = file.id
+  try {
+    const response = await fetch(file.url)
+    const blob     = await response.blob()
+    const url      = URL.createObjectURL(blob)
+    const a        = document.createElement('a')
+    a.href         = url
+    a.download     = file.originalname
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
+    URL.revokeObjectURL(url)
+  } catch {
+    $q.notify({ type: 'negative', message: 'Error al descargar el archivo' })
+  } finally {
+    downloadingId.value = null
   }
 }
 

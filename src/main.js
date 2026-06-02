@@ -24,4 +24,9 @@ app.use(router)
 app.use(i18n)
 app.config.globalProperties.$api = api
 
+const savedDark = localStorage.getItem('devspace_dark')
+if (savedDark !== null) {
+  import('quasar').then(({ Dark }) => Dark.set(JSON.parse(savedDark)))
+}
+
 app.mount('#app')

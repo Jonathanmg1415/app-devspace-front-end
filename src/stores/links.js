@@ -9,28 +9,26 @@ export const useLinksStore = defineStore('links', () => {
   async function fetchAll(projectId) {
     loading.value = true
     try {
-      const { data } = await api.get(`/api/projects/${projectId}/links`)
+      const { data } = await api.get('/api/links', { params: { projectId } })
       items.value = data.links ?? []
-    } finally {
-      loading.value = false
-    }
+    } finally { loading.value = false }
   }
 
   async function create(projectId, payload) {
-    const { data } = await api.post(`/api/projects/${projectId}/links`, payload)
+    const { data } = await api.post('/api/links', { projectId, ...payload })
     items.value.unshift(data.enlace)
     return data.enlace
   }
 
   async function update(id, payload) {
-    const { data } = await api.put(`/api/links/${id}`, payload)
+    const { data } = await api.put('/api/links/edit', { id, ...payload })
     const idx = items.value.findIndex(i => i.id === id)
     if (idx !== -1) items.value[idx] = data.enlace
     return data.enlace
   }
 
   async function remove(id) {
-    await api.delete(`/api/links/${id}`)
+    await api.delete('/api/links/delete', { data: { id } })
     items.value = items.value.filter(i => i.id !== id)
   }
 

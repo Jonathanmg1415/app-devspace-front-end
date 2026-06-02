@@ -12,7 +12,7 @@
           {{ project.description }}
         </div>
       </div>
-      <q-btn flat dense size="sm" icon="group" label="Miembros"
+      <q-btn v-if="isOwner" flat dense size="sm" icon="group" label="Miembros"
         style="color:var(--ds-text-2); height:34px"
         @click="openMembers" />
     </div>
@@ -48,7 +48,6 @@
           </div>
         </q-card-section>
 
-        <!-- Invite input -->
         <q-card-section style="padding:16px 24px">
           <div class="row q-gutter-sm">
             <q-input
@@ -67,16 +66,9 @@
 
         <q-separator style="background:var(--ds-border)" />
 
-        <!-- Members list -->
         <q-card-section style="padding:12px 24px; max-height:320px; overflow-y:auto">
           <div v-if="loading" class="flex flex-center q-py-md">
             <q-spinner size="24px" color="primary" />
-          </div>
-
-          <div v-else-if="!members.length"
-            class="flex flex-center column q-py-md" style="color:var(--ds-text-3)">
-            <q-icon name="group" size="32px" style="opacity:0.3" />
-            <p style="font-size:13px; margin-top:8px">Solo tú en este proyecto</p>
           </div>
 
           <div v-else class="q-gutter-sm">
@@ -84,19 +76,25 @@
             <div class="member-row">
               <q-avatar size="32px"
                 :style="{ background: 'var(--ds-orange)', color:'#fff', fontSize:'12px', fontWeight:'600' }">
-                {{ project?.ownerData?.name?.[0]?.toUpperCase() || '?' }}
+                {{ auth.user?.name?.[0]?.toUpperCase() || '?' }}
               </q-avatar>
               <div class="col" style="overflow:hidden">
                 <div style="font-size:13px; font-weight:500; color:var(--ds-text-1)">
-                  {{ project?.ownerData?.name }}
+                  {{ auth.user?.name }}
                   <span style="font-size:10px; color:var(--ds-text-3); margin-left:6px">tú</span>
                 </div>
-                <div style="font-size:11px; color:var(--ds-text-3)">{{ project?.ownerData?.email }}</div>
+                <div style="font-size:11px; color:var(--ds-text-3)">{{ auth.user?.email }}</div>
               </div>
               <span class="role-badge owner">owner</span>
             </div>
 
             <!-- Members -->
+            <div v-if="!members.length" class="flex flex-center column q-py-md"
+              style="color:var(--ds-text-3)">
+              <q-icon name="group" size="32px" style="opacity:0.3" />
+              <p style="font-size:13px; margin-top:8px">Solo tú en este proyecto</p>
+            </div>
+
             <div v-for="m in members" :key="m.id" class="member-row">
               <q-avatar size="32px"
                 :style="{ background: 'var(--ds-bg-hover)', color:'var(--ds-text-1)', fontSize:'12px', fontWeight:'600' }">
@@ -141,7 +139,7 @@ const route  = useRoute()
 const router = useRouter()
 const projectsStore = useProjectsStore()
 const membersStore  = useMembersStore()
-const auth = useAuthStore()
+const auth   = useAuthStore()
 
 const { projects } = storeToRefs(projectsStore)
 const { members, loading, inviting } = storeToRefs(membersStore)
@@ -149,26 +147,27 @@ const { members, loading, inviting } = storeToRefs(membersStore)
 const showMembers = ref(false)
 const inviteEmail = ref('')
 
-const project = computed(() => {
-  const p = projects.value.find(p => p.id == route.params.id)
-  if (!p) return null
-  return { ...p, ownerData: auth.user }
-})
+const project = computed(() =>
+  projects.value.find(p => p.id == route.params.id)
+)
+
+const isOwner = computed(() => project.value?._role === 'owner')
 
 const nav = computed(() => {
   const id = route.params.id
   return [
-    { label: 'Tareas',    desc: 'Kanban de tareas',         icon: 'task_alt',   color: '#22C55E', to: `/projects/${id}/tasks` },
-    { label: 'Comandos',  desc: 'Snippets CLI',              icon: 'terminal',   color: '#F97316', to: `/projects/${id}/commands` },
-    { label: 'Links',     desc: 'URLs del proyecto',         icon: 'link',       color: '#38BDF8', to: `/projects/${id}/links` },
-    { label: 'Notas',     desc: 'Documentación técnica',     icon: 'description',color: '#A78BFA', to: `/projects/${id}/notes` },
-    { label: 'Cards',     desc: 'Notas rápidas arrastrables',icon: 'view_kanban',color: '#F472B6', to: `/projects/${id}/cards` },
-    { label: 'Archivos',  desc: 'PDFs y documentos',         icon: 'attach_file',color: '#FBBF24', to: `/projects/${id}/files` },
+    { label: 'Tareas',    desc: 'Kanban de tareas',          icon: 'task_alt',    color: '#22C55E', to: `/projects/${id}/tasks` },
+    { label: 'Comandos',  desc: 'Snippets CLI',               icon: 'terminal',    color: '#F97316', to: `/projects/${id}/commands` },
+    { label: 'Links',     desc: 'URLs del proyecto',          icon: 'link',        color: '#38BDF8', to: `/projects/${id}/links` },
+    { label: 'Notas',     desc: 'Documentación técnica',      icon: 'description', color: '#A78BFA', to: `/projects/${id}/notes` },
+    { label: 'Cards',     desc: 'Notas rápidas arrastrables', icon: 'view_kanban', color: '#F472B6', to: `/projects/${id}/cards` },
+    { label: 'Archivos',  desc: 'PDFs y documentos',          icon: 'attach_file', color: '#FBBF24', to: `/projects/${id}/files` },
   ]
 })
 
 onMounted(async () => {
-  if (!projects.value.length) await projectsStore.fetchAll()
+  if (auth.token && !auth.user) await auth.fetchMe()
+  await projectsStore.fetchAll()
 })
 
 async function openMembers() {

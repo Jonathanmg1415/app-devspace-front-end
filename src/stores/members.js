@@ -1,39 +1,44 @@
-import { defineStore } from 'pinia'
-import { ref } from 'vue'
-import { api } from 'src/boot/axios'
+import { defineStore } from "pinia";
+import { ref } from "vue";
+import { api } from "src/boot/axios";
 
-export const useMembersStore = defineStore('members', () => {
-  const members  = ref([])
-  const loading  = ref(false)
-  const inviting = ref(false)
+export const useMembersStore = defineStore("members", () => {
+  const members = ref([]);
+  const loading = ref(false);
+  const inviting = ref(false);
 
   async function fetchAll(projectId) {
-    loading.value = true
+    loading.value = true;
     try {
-      const { data } = await api.get(`/api/projects/${projectId}/members`)
-      members.value = data.members ?? []
+      const { data } = await api.get("/api/members", { params: { projectId } });
+      members.value = data.members ?? [];
     } finally {
-      loading.value = false
+      loading.value = false;
     }
   }
 
   async function invite(projectId, email) {
-    inviting.value = true
+    inviting.value = true;
     try {
-      const { data } = await api.post(`/api/projects/${projectId}/members/invite`, { email })
-      members.value.push(data.member)
-      return data.member
+      const { data } = await api.post("/api/members/invite", {
+        projectId,
+        email,
+      });
+      members.value.push(data.member);
+      return data.member;
     } finally {
-      inviting.value = false
+      inviting.value = false;
     }
   }
 
   async function remove(projectId, memberId) {
-    await api.delete(`/api/projects/${projectId}/members/${memberId}`)
-    members.value = members.value.filter(m => m.id !== memberId)
+    await api.delete("/api/members/delete", { data: { projectId, memberId } });
+    members.value = members.value.filter((m) => m.id !== memberId);
   }
 
-  function clear() { members.value = [] }
+  function clear() {
+    members.value = [];
+  }
 
-  return { members, loading, inviting, fetchAll, invite, remove, clear }
-})
+  return { members, loading, inviting, fetchAll, invite, remove, clear };
+});

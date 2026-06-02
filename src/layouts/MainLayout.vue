@@ -72,12 +72,7 @@
           />
           <q-menu>
             <q-list style="min-width: 140px; padding: 4px">
-              <q-item
-                clickable
-                v-close-popup
-                @click="$q.dark.set(false)"
-                style="border-radius: 6px"
-              >
+              <q-item clickable v-close-popup @click="setDark(false)">
                 <q-item-section avatar style="min-width: 28px"
                   ><q-icon name="light_mode" size="14px"
                 /></q-item-section>
@@ -86,7 +81,7 @@
               <q-item
                 clickable
                 v-close-popup
-                @click="$q.dark.set(true)"
+                @click="setDark(true)"
                 style="border-radius: 6px"
               >
                 <q-item-section avatar style="min-width: 28px"
@@ -97,7 +92,7 @@
               <q-item
                 clickable
                 v-close-popup
-                @click="$q.dark.set('auto')"
+                @click="setDark('auto')"
                 style="border-radius: 6px"
               >
                 <q-item-section avatar style="min-width: 28px"
@@ -250,7 +245,13 @@ import { useRouter, useRoute } from "vue-router";
 import { useQuasar } from "quasar";
 import { useAuthStore } from "src/stores/auth";
 import { useProjectsStore } from "src/stores/projects";
+import { onMounted } from 'vue'
 
+onMounted(async () => {
+  if (auth.token && !auth.user) {
+    await auth.fetchMe()
+  }
+})
 const $q = useQuasar();
 const router = useRouter();
 const route = useRoute();
@@ -278,6 +279,10 @@ const projectNav = computed(() => {
     { label: "Archivos", icon: "attach_file", to: `/projects/${id}/files` },
   ];
 });
+function setDark(val) {
+  $q.dark.set(val)
+  localStorage.setItem('devspace_dark', JSON.stringify(val))
+}
 
 function handleLogout() {
   auth.logout();

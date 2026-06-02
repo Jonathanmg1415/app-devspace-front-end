@@ -8,17 +8,16 @@ export const useProjectsStore = defineStore('projects', () => {
   const loading  = ref(false)
 
   async function fetchAll() {
-    loading.value = true
-    try {
-      const { data } = await api.get('/api/projects')
-      projects.value = data.projects
-    } finally {
-      loading.value = false
-    }
-  }
+  loading.value = true
+  try {
+    const { data } = await api.get('/api/projects')
+    console.log('proyectos del back:', data.projects)
+    projects.value = data.projects ?? []
+  } finally { loading.value = false }
+}
 
   async function fetchOne(id) {
-    const { data } = await api.get(`/api/projects/${id}`)
+    const { data } = await api.get('/api/projects/detail', { params: { id } })
     current.value = data.project
     return data.project
   }
@@ -30,14 +29,14 @@ export const useProjectsStore = defineStore('projects', () => {
   }
 
   async function update(id, payload) {
-    const { data } = await api.put(`/api/projects/${id}`, payload)
+    const { data } = await api.put('/api/projects/edit', { id, ...payload })
     const idx = projects.value.findIndex(p => p.id === id)
     if (idx !== -1) projects.value[idx] = data.project
     return data.project
   }
 
   async function remove(id) {
-    await api.delete(`/api/projects/${id}`)
+    await api.delete('/api/projects/delete', { data: { id } })
     projects.value = projects.value.filter(p => p.id !== id)
   }
 

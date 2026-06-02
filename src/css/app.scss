@@ -22,7 +22,14 @@
   --ds-radius-sm:   6px;
   --ds-transition:  150ms cubic-bezier(0.4,0,0.2,1);
 }
+html, body {
+  height: 100%;
+  overflow: hidden;
+}
 
+#app {
+  height: 100%;
+}
 // ── Tokens light ─────────────────────────────────────────────
 body.body--light {
   --ds-bg-0:        #F5F5F7;
@@ -451,4 +458,9 @@ body {
   background: var(--ds-bg-2) !important;
   border: 1px solid var(--ds-border-md) !important;
   border-radius: var(--ds-radius) !important;
+}
+
+.card-colored {
+  border-top-width: 3px !important;
+  border-top-style: solid !important;
 }

@@ -9,13 +9,9 @@
   </q-layout>
 </template>
 
-<script setup>
-</script>
-
 <style scoped>
 .auth-bg {
   background: var(--ds-bg-0);
-  min-height: 100vh;
   position: relative;
   overflow: hidden;
 }
