@@ -22,41 +22,44 @@
           </q-badge>
         </div>
 
-        <div v-for="task in tasksByStatus(col.status)" :key="task.id" class="task-card">
-          <div class="row items-start no-wrap q-mb-xs">
-            <div class="col" style="font-size:13px; font-weight:500; color:var(--ds-text-1); line-height:1.4">
-              {{ task.title }}
+        <!-- ✅ Contenedor con scroll -->
+        <div class="kanban-cards">
+          <div v-for="task in tasksByStatus(col.status)" :key="task.id" class="task-card">
+            <div class="row items-start no-wrap q-mb-xs">
+              <div class="col" style="font-size:13px; font-weight:500; color:var(--ds-text-1); line-height:1.4">
+                {{ task.title }}
+              </div>
+              <q-btn flat round dense size="xs" icon="more_vert"
+                style="color:var(--ds-text-3); margin-top:-2px; flex-shrink:0" @click.stop>
+                <q-menu>
+                  <q-list style="min-width:130px; padding:4px">
+                    <div style="font-size:10px; font-weight:600; text-transform:uppercase; letter-spacing:0.06em; color:var(--ds-text-3); padding:4px 12px 2px">
+                      Mover a
+                    </div>
+                    <q-item v-for="s in statuses.filter(s => s.value !== task.status)" :key="s.value"
+                      clickable v-close-popup @click="changeStatus(task, s.value)" style="border-radius:6px">
+                      <q-item-section style="font-size:13px">{{ s.label }}</q-item-section>
+                    </q-item>
+                    <q-separator style="margin:4px 0" />
+                    <q-item clickable v-close-popup @click="deleteTask(task)" style="border-radius:6px; color:var(--ds-negative)">
+                      <q-item-section style="font-size:13px">Eliminar</q-item-section>
+                    </q-item>
+                  </q-list>
+                </q-menu>
+              </q-btn>
             </div>
-            <q-btn flat round dense size="xs" icon="more_vert"
-              style="color:var(--ds-text-3); margin-top:-2px; flex-shrink:0" @click.stop>
-              <q-menu>
-                <q-list style="min-width:130px; padding:4px">
-                  <div style="font-size:10px; font-weight:600; text-transform:uppercase; letter-spacing:0.06em; color:var(--ds-text-3); padding:4px 12px 2px">
-                    Mover a
-                  </div>
-                  <q-item v-for="s in statuses.filter(s => s.value !== task.status)" :key="s.value"
-                    clickable v-close-popup @click="changeStatus(task, s.value)" style="border-radius:6px">
-                    <q-item-section style="font-size:13px">{{ s.label }}</q-item-section>
-                  </q-item>
-                  <q-separator style="margin:4px 0" />
-                  <q-item clickable v-close-popup @click="deleteTask(task)" style="border-radius:6px; color:var(--ds-negative)">
-                    <q-item-section style="font-size:13px">Eliminar</q-item-section>
-                  </q-item>
-                </q-list>
-              </q-menu>
-            </q-btn>
+            <div v-if="task.description" style="font-size:11px; color:var(--ds-text-2); margin-bottom:8px; line-height:1.4">
+              {{ task.description }}
+            </div>
+            <div class="row items-center" style="gap:6px">
+              <span class="priority-badge" :class="task.priority">{{ task.priority }}</span>
+            </div>
           </div>
-          <div v-if="task.description" style="font-size:11px; color:var(--ds-text-2); margin-bottom:8px; line-height:1.4">
-            {{ task.description }}
-          </div>
-          <div class="row items-center" style="gap:6px">
-            <span class="priority-badge" :class="task.priority">{{ task.priority }}</span>
-          </div>
-        </div>
 
-        <div v-if="!tasksByStatus(col.status).length"
-          style="font-size:12px; color:var(--ds-text-3); text-align:center; padding:20px 0; border:1px dashed var(--ds-border); border-radius:6px; margin-top:4px">
-          Sin tareas
+          <div v-if="!tasksByStatus(col.status).length"
+            style="font-size:12px; color:var(--ds-text-3); text-align:center; padding:20px 0; border:1px dashed var(--ds-border); border-radius:6px; margin-top:4px">
+            Sin tareas
+          </div>
         </div>
       </div>
     </div>
@@ -140,6 +143,10 @@ function deleteTask(task) {
   border: 1px solid var(--ds-border);
   border-radius: var(--ds-radius);
   padding: 12px;
+  /* ✅ Columna no crece indefinidamente */
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100vh - 180px);
 }
 @media (min-width: 900px) {
   .kanban-wrapper { flex-wrap: nowrap; }
@@ -149,6 +156,26 @@ function deleteTask(task) {
   font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase;
   color: var(--ds-text-2); padding-bottom: 10px; border-bottom: 1px solid var(--ds-border);
   margin-bottom: 10px; display: flex; align-items: center; gap: 8px;
+  flex-shrink: 0; /* ✅ El header no se comprime */
+}
+/* ✅ Área de tarjetas con scroll independiente por columna */
+.kanban-cards {
+  overflow-y: auto;
+  flex: 1;
+  padding-right: 2px;
+}
+.kanban-cards::-webkit-scrollbar {
+  width: 4px;
+}
+.kanban-cards::-webkit-scrollbar-track {
+  background: transparent;
+}
+.kanban-cards::-webkit-scrollbar-thumb {
+  background: var(--ds-border);
+  border-radius: 2px;
+}
+.kanban-cards::-webkit-scrollbar-thumb:hover {
+  background: var(--ds-border-md);
 }
 .task-card {
   background: var(--ds-bg-2); border: 1px solid var(--ds-border); border-radius: var(--ds-radius-sm);
