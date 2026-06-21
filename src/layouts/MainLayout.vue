@@ -3,12 +3,13 @@
 
     <q-header>
       <q-toolbar style="padding: 0 8px; min-height: 48px">
-        <q-btn flat round dense icon="menu" size="sm"
-          @click="drawer = !drawer" style="color:var(--ds-text-2)" />
-
-        <q-toolbar-title style="font-size:14px; font-weight:600; letter-spacing:-0.01em; flex:0 0 auto; padding-right:8px">
-          <img src="/favicon.png" style="height:24px; width:24px; border-radius:50%; vertical-align:middle" />
-          <span style="margin-left:6px">Dev<span style="color:var(--ds-orange)">Space</span></span>
+<q-toolbar-title style="flex:0 0 auto; padding-right:8px">
+          <div class="ds-logo-wrap">
+            <div class="ds-logo-icon">
+              <img src="/favicon.png" style="height:20px; width:20px; border-radius:50%; display:block" />
+            </div>
+            <span class="ds-logo-text">Dev<span style="color:var(--ds-orange)">Space</span></span>
+          </div>
         </q-toolbar-title>
 
         <q-space />
@@ -48,8 +49,8 @@
         </q-btn>
 
         <!-- User -->
-        <q-btn flat round dense size="sm" style="color:var(--ds-text-2); margin-left:2px">
-          <q-avatar size="24px" :style="{ background:'var(--ds-orange)', color:'#fff', fontSize:'10px', fontWeight:'600' }">
+        <q-btn flat round dense style="color:var(--ds-text-2); margin-left:4px; padding:2px">
+          <q-avatar size="38px" :style="{ background:'var(--ds-orange)', color:'#fff', fontSize:'15px', fontWeight:'700' }">
             {{ userInitial }}
           </q-avatar>
           <q-menu>
@@ -59,6 +60,11 @@
                   <div style="font-size:12px; font-weight:600; color:var(--ds-text-1)">{{ auth.user?.name }}</div>
                   <div style="font-size:11px; color:var(--ds-text-3)">{{ auth.user?.email }}</div>
                 </q-item-section>
+              </q-item>
+              <q-separator style="margin:4px 0" />
+              <q-item clickable v-close-popup @click="router.push('/profile')" style="border-radius:6px">
+                <q-item-section avatar style="min-width:28px"><q-icon name="manage_accounts" size="14px" /></q-item-section>
+                <q-item-section style="font-size:13px">Mi perfil</q-item-section>
               </q-item>
               <q-separator style="margin:4px 0" />
               <q-item clickable v-close-popup @click="handleLogout" style="border-radius:6px; color:var(--ds-negative)">
@@ -82,6 +88,10 @@
           <q-item clickable v-ripple :to="{ path: '/search' }" class="sidebar-item">
             <q-item-section avatar><q-icon name="search" size="15px" /></q-item-section>
             <q-item-section>Buscar</q-item-section>
+          </q-item>
+          <q-item clickable v-ripple :to="{ path: '/changelog' }" class="sidebar-item">
+            <q-item-section avatar><q-icon name="auto_awesome" size="15px" /></q-item-section>
+            <q-item-section>Novedades</q-item-section>
           </q-item>
 
           <template v-if="currentProject">
@@ -113,6 +123,7 @@ import { useRouter, useRoute } from 'vue-router'
 import { useQuasar } from 'quasar'
 import { useAuthStore } from 'src/stores/auth'
 import { useProjectsStore } from 'src/stores/projects'
+import { decodeId } from 'src/utils/routeId'
 
 const $q     = useQuasar()
 const router = useRouter()
@@ -120,7 +131,7 @@ const route  = useRoute()
 const auth   = useAuthStore()
 const projectsStore = useProjectsStore()
 
-const drawer = ref(false)
+const drawer = ref(true)
 
 onMounted(async () => {
   if (auth.token && !auth.user) await auth.fetchMe()
@@ -131,9 +142,10 @@ onMounted(async () => {
 
 const userInitial = computed(() => auth.user?.name?.[0]?.toUpperCase() || '?')
 
-const currentProject = computed(() =>
-  route.params.id ? projectsStore.projects.find(p => p.id == route.params.id) : null
-)
+const currentProject = computed(() => {
+  const id = decodeId(route.params.id)
+  return id ? projectsStore.projects.find(p => p.id === id) : null
+})
 
 const projectNav = computed(() => {
   const id = route.params.id
@@ -142,8 +154,8 @@ const projectNav = computed(() => {
     { label: 'Comandos', icon: 'terminal',   to: `/projects/${id}/commands` },
     { label: 'Links',    icon: 'link',       to: `/projects/${id}/links` },
     { label: 'Notas',    icon: 'description',to: `/projects/${id}/notes` },
-    { label: 'Cards',    icon: 'view_kanban',to: `/projects/${id}/cards` },
-    { label: 'Archivos', icon: 'attach_file',to: `/projects/${id}/files` },
+    { label: 'Archivos',  icon: 'attach_file', to: `/projects/${id}/files` },
+    { label: 'Actividad', icon: 'timeline',    to: `/projects/${id}/activity` },
   ]
 })
 
@@ -159,6 +171,29 @@ function handleLogout() {
 </script>
 
 <style scoped>
+/* ── Logo ── */
+.ds-logo-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+}
+.ds-logo-icon {
+  width: 28px; height: 28px;
+  border-radius: 8px;
+  background: var(--ds-bg-2);
+  border: 1px solid var(--ds-border-md);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+.ds-logo-text {
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--ds-text-1);
+}
+
 .sidebar-section-label {
   font-size: 10px;
   font-weight: 600;

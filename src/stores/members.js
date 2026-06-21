@@ -31,6 +31,13 @@ export const useMembersStore = defineStore("members", () => {
     }
   }
 
+  async function updateRole(projectId, memberId, role) {
+    const { data } = await api.put("/api/members/update-role", { projectId, memberId, role });
+    const idx = members.value.findIndex(m => m.id === memberId);
+    if (idx !== -1) members.value[idx] = { ...members.value[idx], role };
+    return data.member;
+  }
+
   async function remove(projectId, memberId) {
     await api.delete("/api/members/delete", { data: { projectId, memberId } });
     members.value = members.value.filter((m) => m.id !== memberId);
@@ -40,5 +47,5 @@ export const useMembersStore = defineStore("members", () => {
     members.value = [];
   }
 
-  return { members, loading, inviting, fetchAll, invite, remove, clear };
+  return { members, loading, inviting, fetchAll, invite, updateRole, remove, clear };
 });

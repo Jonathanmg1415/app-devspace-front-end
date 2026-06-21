@@ -34,6 +34,14 @@
           Regístrate
         </router-link>
       </div>
+      <div class="q-mt-sm text-center" style="font-size:12px; color:var(--ds-text-3)">
+        <router-link to="/auth/forgot-password" style="color:var(--ds-text-3); text-decoration:none">
+          ¿Olvidaste tu contraseña?
+        </router-link>
+      </div>
+      <div class="q-mt-sm text-center" style="font-size:11px; color:var(--ds-text-3)">
+        v0.3.0-alpha
+      </div>
     </q-card-section>
   </q-card>
 </template>

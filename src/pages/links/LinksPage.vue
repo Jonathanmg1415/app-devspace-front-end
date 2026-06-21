@@ -145,13 +145,14 @@ import { useRoute } from "vue-router";
 import { useQuasar } from "quasar";
 import { useLinksStore } from "src/stores/links";
 import { storeToRefs } from "pinia";
+import { decodeId } from "src/utils/routeId";
 
 const $q = useQuasar();
 const route = useRoute();
 const store = useLinksStore();
 const { items, loading } = storeToRefs(store);
 
-const projectId = computed(() => route.params.id);
+const projectId = computed(() => decodeId(route.params.id));
 const openForm = ref(false);
 const saving = ref(false);
 const form = ref({ title: "", url: "", label: "" });

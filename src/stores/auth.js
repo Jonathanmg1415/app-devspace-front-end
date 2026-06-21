@@ -23,7 +23,7 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   async function fetchMe() {
-    const { data } = await api.get('/api/auth/me')
+    const { data } = await api.get('/api/auth/me', { timeout: 8000 })
     user.value = data.user
   }
 

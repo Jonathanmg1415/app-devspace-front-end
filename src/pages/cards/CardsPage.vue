@@ -150,13 +150,14 @@ import { useI18n } from "vue-i18n";
 import { useQuasar } from "quasar";
 import { useCardsStore } from "src/stores/cards";
 import { storeToRefs } from "pinia";
+import { decodeId } from "src/utils/routeId";
 
 const { t } = useI18n();
 const $q = useQuasar();
 const route = useRoute();
 const store = useCardsStore();
 const { items } = storeToRefs(store);
-const projectId = computed(() => route.params.id);
+const projectId = computed(() => decodeId(route.params.id));
 const openForm = ref(false);
 const saving = ref(false);
 const editingId = ref(null);

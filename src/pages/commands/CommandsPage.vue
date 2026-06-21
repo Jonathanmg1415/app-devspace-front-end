@@ -13,7 +13,7 @@
         label="Nuevo comando"
         size="sm"
         style="height: 34px"
-        @click="openForm = true"
+        @click="openNew"
       />
     </div>
 
@@ -26,35 +26,35 @@
         <div style="padding: 16px">
           <div class="row items-start no-wrap q-mb-xs">
             <div class="col">
-              <div
-                style="
-                  font-size: 13px;
-                  font-weight: 600;
-                  color: var(--ds-text-1);
-                "
-              >
-                {{ cmd.title }}
+              <div class="row items-center" style="gap:6px; margin-bottom:2px">
+                <div style="font-size: 13px; font-weight: 600; color: var(--ds-text-1)">
+                  {{ cmd.title }}
+                </div>
+                <span v-if="cmd.area" class="area-badge">{{ cmd.area }}</span>
               </div>
               <div
                 v-if="cmd.description"
-                style="
-                  font-size: 11px;
-                  color: var(--ds-text-2);
-                  margin-top: 2px;
-                "
+                style="font-size: 11px; color: var(--ds-text-2); margin-top: 2px"
               >
                 {{ cmd.description }}
               </div>
             </div>
             <q-btn
-              flat
-              round
-              dense
-              size="xs"
+              flat round dense size="xs"
+              icon="edit_outlined"
+              style="color: var(--ds-text-3)"
+              @click="startEdit(cmd)"
+            >
+              <q-tooltip>Editar</q-tooltip>
+            </q-btn>
+            <q-btn
+              flat round dense size="xs"
               icon="delete_outline"
               style="color: var(--ds-text-3)"
               @click="confirmDelete(cmd)"
-            />
+            >
+              <q-tooltip>Eliminar</q-tooltip>
+            </q-btn>
           </div>
 
           <div
@@ -62,20 +62,11 @@
             @click="copyCmd(cmd.command)"
             style="cursor: pointer"
           >
-            <span
-              style="
-                flex: 1;
-                overflow: hidden;
-                text-overflow: ellipsis;
-                white-space: nowrap;
-              "
-              >{{ cmd.command }}</span
-            >
+            <span style="flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">
+              {{ cmd.command }}
+            </span>
             <q-btn
-              flat
-              round
-              dense
-              size="xs"
+              flat round dense size="xs"
               icon="content_copy"
               style="color: var(--ds-text-3); flex-shrink: 0; margin: -4px"
               @click.stop="copyCmd(cmd.command)"
@@ -89,9 +80,7 @@
             class="row q-mt-sm"
             style="gap: 4px; flex-wrap: wrap"
           >
-            <span v-for="tag in cmd.tags" :key="tag" class="ds-tag">{{
-              tag
-            }}</span>
+            <span v-for="tag in cmd.tags" :key="tag" class="ds-tag">{{ tag }}</span>
           </div>
         </div>
       </div>
@@ -106,87 +95,65 @@
       <p class="q-mt-md" style="font-size: 14px">No hay comandos aún</p>
     </div>
 
+    <!-- Dialog crear / editar -->
     <q-dialog v-model="openForm" persistent>
       <q-card style="width: min(440px, 96vw)">
         <q-card-section style="padding: 24px 24px 0">
-          <div
-            style="font-size: 15px; font-weight: 600; color: var(--ds-text-1)"
-          >
-            Nuevo comando
+          <div style="font-size: 15px; font-weight: 600; color: var(--ds-text-1)">
+            {{ editing ? 'Editar comando' : 'Nuevo comando' }}
           </div>
         </q-card-section>
 
         <q-card-section style="padding: 16px 24px" class="q-gutter-sm">
           <q-input v-model="form.title" label="Título" outlined dense />
 
+          <q-input v-model="form.area" label="Área / Aplicativo" outlined dense
+            placeholder="ej: Backend, Frontend, Base de datos, Docker..." />
+
           <q-input
             v-model="form.command"
             label="Comando"
             outlined
             dense
-            style="font-family: &quot;JetBrains Mono&quot;, monospace"
+            style="font-family: 'JetBrains Mono', monospace"
           />
 
-          <!-- Descripción + botón IA -->
           <div>
-            <div>
-              <q-input
-                v-model="form.description"
-                label="Descripción"
-                outlined
-                type="textarea"
-                rows="3"
-              />
-              <div class="row justify-end q-mt-xs">
-                <q-btn
-                  flat
-                  dense
-                  size="sm"
-                  @click="generateDescription"
-                  :loading="generatingDesc"
-                  :disable="!form.command"
-                  style="color: var(--ds-orange); font-size: 12px; gap: 4px"
-                >
-                  <q-icon name="auto_awesome" size="14px" />
-                  Generar con IA
-                </q-btn>
-              </div>
-              <div
-                v-if="!form.command"
-                style="
-                  font-size: 11px;
-                  color: var(--ds-text-3);
-                  margin-top: 2px;
-                "
+            <q-input
+              v-model="form.description"
+              label="Descripción"
+              outlined
+              type="textarea"
+              rows="3"
+            />
+            <div class="row justify-end q-mt-xs">
+              <q-btn
+                flat dense size="sm"
+                @click="generateDescription"
+                :loading="generatingDesc"
+                :disable="!form.command"
+                style="color: var(--ds-orange); font-size: 12px; gap: 4px"
               >
-                Escribe el comando primero
-              </div>
-            </div>
-            <div
-              v-if="!form.command"
-              style="font-size: 11px; color: var(--ds-text-3); margin-top: 4px"
-            >
-              Escribe el comando primero para generar la descripción
+                <q-icon name="auto_awesome" size="14px" />
+                Generar con IA
+              </q-btn>
             </div>
           </div>
         </q-card-section>
 
         <q-card-actions align="right" style="padding: 0 24px 20px; gap: 8px">
           <q-btn
-            flat
-            label="Cancelar"
-            size="sm"
-            v-close-popup
-            @click="resetForm"
+            flat label="Cancelar" size="sm"
+            v-close-popup @click="resetForm"
             style="color: var(--ds-text-2)"
           />
           <q-btn
             color="primary"
-            label="Crear"
+            :label="editing ? 'Guardar' : 'Crear'"
             size="sm"
             :loading="saving"
             style="min-width: 72px; height: 34px"
-            @click="handleCreate"
+            @click="handleSubmit"
           />
         </q-card-actions>
       </q-card>
@@ -200,22 +167,36 @@ import { useRoute } from "vue-router";
 import { useQuasar } from "quasar";
 import { useCommandsStore } from "src/stores/commands";
 import { storeToRefs } from "pinia";
+import { decodeId } from "src/utils/routeId";
 
 const $q = useQuasar();
 const route = useRoute();
 const store = useCommandsStore();
 const { items, loading } = storeToRefs(store);
 
-const projectId = computed(() => route.params.id);
+const projectId = computed(() => decodeId(route.params.id));
 const openForm = ref(false);
 const saving = ref(false);
 const generatingDesc = ref(false);
-const form = ref({ title: "", command: "", description: "" });
+const editing = ref(null);
+const form = ref({ title: "", command: "", description: "", area: "" });
 
 onMounted(() => store.fetchAll(projectId.value));
 
+function openNew() {
+  resetForm();
+  openForm.value = true;
+}
+
+function startEdit(cmd) {
+  editing.value = cmd;
+  form.value = { title: cmd.title, command: cmd.command, description: cmd.description || "", area: cmd.area || "" };
+  openForm.value = true;
+}
+
 function resetForm() {
-  form.value = { title: "", command: "", description: "" };
+  editing.value = null;
+  form.value = { title: "", command: "", description: "", area: "" };
 }
 
 async function generateDescription() {
@@ -239,25 +220,17 @@ async function generateDescription() {
               content:
                 "Eres un asistente técnico. Describe en español, en máximo 2 oraciones concisas, qué hace el siguiente comando de terminal. Sin formato markdown, solo texto plano.",
             },
-            {
-              role: "user",
-              content: form.value.command,
-            },
+            { role: "user", content: form.value.command },
           ],
         }),
-      },
+      }
     );
-
     const data = await response.json();
     const desc = data.choices?.[0]?.message?.content?.trim();
-
     if (desc) {
       form.value.description = desc;
     } else {
-      $q.notify({
-        type: "warning",
-        message: "No se pudo generar la descripción",
-      });
+      $q.notify({ type: "warning", message: "No se pudo generar la descripción" });
     }
   } catch {
     $q.notify({ type: "negative", message: "Error al conectar con la IA" });
@@ -266,13 +239,22 @@ async function generateDescription() {
   }
 }
 
-async function handleCreate() {
+async function handleSubmit() {
+  if (!form.value.title || !form.value.command) {
+    $q.notify({ type: "warning", message: "Título y comando son requeridos" });
+    return;
+  }
   saving.value = true;
   try {
-    await store.create(projectId.value, form.value);
+    if (editing.value) {
+      await store.update(editing.value.id, form.value);
+      $q.notify({ type: "positive", message: "Comando actualizado" });
+    } else {
+      await store.create(projectId.value, form.value);
+      $q.notify({ type: "positive", message: "Comando creado" });
+    }
     openForm.value = false;
     resetForm();
-    $q.notify({ type: "positive", message: "Comando creado" });
   } finally {
     saving.value = false;
   }
@@ -307,5 +289,15 @@ function confirmDelete(cmd) {
   background: var(--ds-orange-dim);
   border: 1px solid rgba(249, 115, 22, 0.2);
   color: var(--ds-orange);
+}
+.area-badge {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 1px 7px;
+  border-radius: 3px;
+  background: rgba(56, 189, 248, 0.1);
+  border: 1px solid rgba(56, 189, 248, 0.2);
+  color: #38BDF8;
+  letter-spacing: 0.02em;
 }
 </style>

@@ -24,7 +24,7 @@
     <!-- Grid responsive: 1 col móvil, 2 tablet, 3+ desktop -->
     <div v-else class="projects-grid">
       <div v-for="project in projects" :key="project.id"
-        class="project-card" @click="router.push(`/projects/${project.id}`)">
+        class="project-card" @click="router.push(`/projects/${encodeId(project.id)}`)">
         <div class="project-color-bar" :style="{ background: project.color || 'var(--ds-orange)' }" />
         <div style="padding:14px 14px 14px 18px">
           <div class="row items-start no-wrap">
@@ -37,7 +37,7 @@
                 {{ project.description }}
               </div>
             </div>
-            <q-btn flat round dense icon="more_vert" size="xs"
+            <q-btn v-if="project._role === 'owner'" flat round dense icon="more_vert" size="xs"
               style="color:var(--ds-text-3); margin-top:-2px; margin-right:-6px" @click.stop>
               <q-menu>
                 <q-list style="min-width:130px; padding:4px">
@@ -101,6 +101,7 @@ import { useRouter } from 'vue-router'
 import { useQuasar } from 'quasar'
 import { useProjectsStore } from 'src/stores/projects'
 import { storeToRefs } from 'pinia'
+import { encodeId } from 'src/utils/routeId'
 
 const $q = useQuasar(); const router = useRouter()
 const store = useProjectsStore()

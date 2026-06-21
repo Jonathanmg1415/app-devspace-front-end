@@ -10,6 +10,12 @@
           {{ project.description }}
         </div>
       </div>
+      <q-btn flat dense size="sm" icon="download"
+        :label="$q.screen.gt.xs ? 'Exportar' : ''"
+        style="color:var(--ds-text-2); height:34px; margin-right:4px"
+        :loading="exporting" @click="handleExport">
+        <q-tooltip>Exportar proyecto como JSON</q-tooltip>
+      </q-btn>
       <q-btn v-if="isOwner" flat dense size="sm" icon="group"
         :label="$q.screen.gt.xs ? 'Miembros' : ''"
         style="color:var(--ds-text-2); height:34px" @click="openMembers" />
@@ -72,7 +78,9 @@
                 <div style="font-size:13px; font-weight:500; color:var(--ds-text-1)">{{ m.user?.name }}</div>
                 <div style="font-size:11px; color:var(--ds-text-3)">{{ m.user?.email }}</div>
               </div>
-              <span class="role-badge member">member</span>
+              <q-select :model-value="m.role" :options="roleOptions" emit-value map-options dense outlined
+                style="min-width:88px; font-size:11px"
+                @update:model-value="handleRoleChange(m, $event)" />
               <q-btn flat round dense size="xs" icon="close" style="color:var(--ds-text-3); margin-left:4px" @click="handleRemove(m)">
                 <q-tooltip>Eliminar miembro</q-tooltip>
               </q-btn>
@@ -95,14 +103,18 @@ import { useProjectsStore } from 'src/stores/projects'
 import { useMembersStore } from 'src/stores/members'
 import { useAuthStore } from 'src/stores/auth'
 import { storeToRefs } from 'pinia'
+import { decodeId } from 'src/utils/routeId'
+import { api } from 'src/boot/axios'
 
 const $q = useQuasar(); const route = useRoute(); const router = useRouter()
 const projectsStore = useProjectsStore(); const membersStore = useMembersStore(); const auth = useAuthStore()
 const { projects } = storeToRefs(projectsStore)
 const { members, loading, inviting } = storeToRefs(membersStore)
 
-const showMembers = ref(false); const inviteEmail = ref('')
-const project = computed(() => projects.value.find(p => p.id == route.params.id))
+const showMembers = ref(false); const inviteEmail = ref(''); const exporting = ref(false)
+const roleOptions = [{ label: 'Member', value: 'member' }, { label: 'Admin', value: 'admin' }]
+const projectId = computed(() => decodeId(route.params.id))
+const project = computed(() => projects.value.find(p => p.id === projectId.value))
 const isOwner  = computed(() => project.value?._role === 'owner')
 
 const nav = computed(() => {
@@ -112,8 +124,8 @@ const nav = computed(() => {
     { label:'Comandos', desc:'Snippets CLI',               icon:'terminal',    color:'#F97316', to:`/projects/${id}/commands` },
     { label:'Links',    desc:'URLs del proyecto',          icon:'link',        color:'#38BDF8', to:`/projects/${id}/links` },
     { label:'Notas',    desc:'Documentación técnica',      icon:'description', color:'#A78BFA', to:`/projects/${id}/notes` },
-    { label:'Cards',    desc:'Notas rápidas arrastrables', icon:'view_kanban', color:'#F472B6', to:`/projects/${id}/cards` },
-    { label:'Archivos', desc:'PDFs y documentos',          icon:'attach_file', color:'#FBBF24', to:`/projects/${id}/files` },
+    { label:'Archivos',  desc:'PDFs y documentos',          icon:'attach_file', color:'#FBBF24', to:`/projects/${id}/files` },
+    { label:'Actividad', desc:'Historial del equipo',        icon:'timeline',    color:'#34D399', to:`/projects/${id}/activity` },
   ]
 })
 
@@ -122,12 +134,12 @@ onMounted(async () => {
   await projectsStore.fetchAll()
 })
 
-async function openMembers() { showMembers.value = true; await membersStore.fetchAll(route.params.id) }
+async function openMembers() { showMembers.value = true; await membersStore.fetchAll(projectId.value) }
 
 async function handleInvite() {
   if (!inviteEmail.value) return
   try {
-    await membersStore.invite(route.params.id, inviteEmail.value)
+    await membersStore.invite(projectId.value, inviteEmail.value)
     inviteEmail.value = ''
     $q.notify({ type: 'positive', message: 'Miembro agregado correctamente' })
   } catch (err) {
@@ -139,9 +151,48 @@ async function handleInvite() {
   }
 }
 
+async function handleRoleChange(m, newRole) {
+  try {
+    await membersStore.updateRole(projectId.value, m.id, newRole)
+    $q.notify({ type: 'positive', message: 'Rol actualizado' })
+  } catch {
+    $q.notify({ type: 'negative', message: 'Error al actualizar rol' })
+  }
+}
+
+async function handleExport() {
+  if (!project.value) return
+  exporting.value = true
+  try {
+    const id = projectId.value
+    const [tasks, notes, commands, links, cards] = await Promise.all([
+      api.get('/api/tasks',    { params: { projectId: id } }).then(r => r.data.tasks ?? []),
+      api.get('/api/notes',    { params: { projectId: id } }).then(r => r.data.notes ?? []),
+      api.get('/api/commands', { params: { projectId: id } }).then(r => r.data.commands ?? []),
+      api.get('/api/links',    { params: { projectId: id } }).then(r => r.data.links ?? []),
+      api.get('/api/cards',    { params: { projectId: id } }).then(r => r.data.cards ?? []),
+    ])
+    const payload = {
+      exportedAt: new Date().toISOString(),
+      project: project.value,
+      tasks, notes, commands, links, cards,
+    }
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' })
+    const url  = URL.createObjectURL(blob)
+    const a    = document.createElement('a')
+    a.href     = url
+    a.download = `devspace-${project.value.name.replace(/\s+/g,'-').toLowerCase()}.json`
+    a.click()
+    URL.revokeObjectURL(url)
+    $q.notify({ type: 'positive', message: 'Proyecto exportado' })
+  } catch {
+    $q.notify({ type: 'negative', message: 'Error al exportar' })
+  } finally { exporting.value = false }
+}
+
 async function handleRemove(m) {
   $q.dialog({ title: 'Eliminar miembro', message: `¿Eliminar a ${m.user?.name} del proyecto?`, cancel: true })
-    .onOk(async () => { await membersStore.remove(route.params.id, m.id); $q.notify({ type: 'positive', message: 'Miembro eliminado' }) })
+    .onOk(async () => { await membersStore.remove(projectId.value, m.id); $q.notify({ type: 'positive', message: 'Miembro eliminado' }) })
 }
 </script>
 
