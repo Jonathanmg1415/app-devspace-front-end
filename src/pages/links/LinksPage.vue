@@ -17,13 +17,17 @@
       />
     </div>
 
-    <div
-      v-if="!items.length && !loading"
-      class="flex flex-center column q-py-xl"
-      style="color: var(--ds-text-3)"
-    >
-      <q-icon name="link" size="48px" style="opacity: 0.3" />
-      <p class="q-mt-md" style="font-size: 14px">No hay links aún</p>
+    <SkeletonList v-if="loading" :count="5" />
+
+    <div v-else-if="!items.length" class="flex flex-center column q-py-xl" style="color:var(--ds-text-3)">
+      <q-icon name="link" size="48px" style="opacity:0.25" />
+      <p style="font-size:14px; margin-top:12px; font-weight:500">Sin links guardados</p>
+      <p style="font-size:12px; margin-top:4px">Guarda URLs importantes de tu proyecto aquí</p>
+    </div>
+
+    <div v-if="hasMore && !loading" class="flex flex-center q-mt-md">
+      <q-btn flat size="sm" label="Cargar más" icon="expand_more"
+        style="color:var(--ds-text-2)" :loading="loadingMore" @click="store.loadMore()" />
     </div>
 
     <div class="row q-gutter-sm">
@@ -146,11 +150,12 @@ import { useQuasar } from "quasar";
 import { useLinksStore } from "src/stores/links";
 import { storeToRefs } from "pinia";
 import { decodeId } from "src/utils/routeId";
+import SkeletonList from "src/components/SkeletonList.vue";
 
 const $q = useQuasar();
 const route = useRoute();
 const store = useLinksStore();
-const { items, loading } = storeToRefs(store);
+const { items, loading, loadingMore, hasMore } = storeToRefs(store);
 
 const projectId = computed(() => decodeId(route.params.id));
 const openForm = ref(false);

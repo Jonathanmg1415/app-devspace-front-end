@@ -68,9 +68,17 @@
       </q-card>
     </q-dialog>
 
-    <div v-if="!items.length" class="flex flex-center column q-py-xl" style="color:var(--ds-text-3)">
-      <q-icon name="description" size="48px" style="opacity:0.3" />
-      <p class="q-mt-md" style="font-size:14px">No hay notas aún</p>
+    <SkeletonList v-if="loading" :count="6" />
+
+    <div v-else-if="!items.length" class="flex flex-center column q-py-xl" style="color:var(--ds-text-3)">
+      <q-icon name="description" size="48px" style="opacity:0.25" />
+      <p style="font-size:14px; margin-top:12px; font-weight:500">Sin notas aún</p>
+      <p style="font-size:12px; margin-top:4px">Crea tu primera nota técnica con el botón de arriba</p>
+    </div>
+
+    <div v-if="hasMore && !loading" class="flex flex-center q-mt-md">
+      <q-btn flat size="sm" label="Cargar más" icon="expand_more"
+        style="color:var(--ds-text-2)" :loading="loadingMore" @click="store.loadMore()" />
     </div>
 
     <!-- Dialog IA -->
@@ -158,6 +166,7 @@ import { useQuasar } from 'quasar'
 import { useNotesStore } from 'src/stores/notes'
 import { storeToRefs } from 'pinia'
 import NoteContent from 'src/components/NoteContent.vue'
+import SkeletonList from 'src/components/SkeletonList.vue'
 import { decodeId } from 'src/utils/routeId'
 import { api } from 'src/boot/axios'
 
@@ -165,7 +174,7 @@ const { t } = useI18n()
 const $q = useQuasar()
 const route = useRoute()
 const store = useNotesStore()
-const { items } = storeToRefs(store)
+const { items, loading, loadingMore, hasMore } = storeToRefs(store)
 const projectId = computed(() => decodeId(route.params.id))
 
 const openForm = ref(false)

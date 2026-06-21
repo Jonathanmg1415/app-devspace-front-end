@@ -50,11 +50,27 @@
 <script setup>
 import { ref } from 'vue'
 
-const currentVersion = '0.3.0'
+const currentVersion = '0.4.0'
 
 const badgeLabel = t => ({ new: 'Nuevo', fix: 'Fix', improve: 'Mejora', breaking: 'Cambio' }[t] || t)
 
 const releases = [
+  {
+    version: 'v0.4.0',
+    type: 'alpha',
+    date: '21 Jun 2026',
+    title: 'Pulido pre-despliegue',
+    changes: [
+      { type: 'new',     text: 'DevSpace ahora es una PWA: puedes instalarlo en tu dispositivo desde el navegador y usarlo como app nativa.' },
+      { type: 'new',     text: 'Página 404 propia: si entras a una ruta inexistente, ves un mensaje claro en vez de una pantalla en blanco.' },
+      { type: 'new',     text: 'Los errores de red y de servidor ahora muestran una notificación clara en pantalla para que sepas qué pasó.' },
+      { type: 'new',     text: 'Las notas pueden verse de manera completa con renderizado de markdown, directamente desde la lista de notas.' },
+      { type: 'improve', text: 'Skeletons animados mientras se cargan los datos: ya no ves una pantalla vacía esperando.' },
+      { type: 'improve', text: 'Las listas de tareas, notas, links y comandos se cargan en partes; botón "Cargar más" cuando hay mucho contenido.' },
+      { type: 'improve', text: 'Los estados vacíos de todas las páginas ahora tienen icono, título y descripción de qué hacer.' },
+      { type: 'improve', text: 'Novedades (este changelog) ya está dentro de la app con la misma barra lateral, sin salir de la experiencia.' },
+    ],
+  },
   {
     version: 'v0.3.0',
     type: 'alpha',

@@ -2,21 +2,46 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { api } from 'src/boot/axios'
 
+const PAGE = 50
+
 export const useNotesStore = defineStore('notes', () => {
-  const items   = ref([])
-  const loading = ref(false)
+  const items       = ref([])
+  const loading     = ref(false)
+  const loadingMore = ref(false)
+  const hasMore     = ref(false)
+  const total       = ref(0)
+  let   _skip       = 0
+  let   _projectId  = null
 
   async function fetchAll(projectId) {
+    _projectId = projectId
+    _skip = 0
     loading.value = true
     try {
-      const { data } = await api.get('/api/notes', { params: { projectId } })
+      const { data } = await api.get('/api/notes', { params: { projectId, limit: PAGE, skip: 0 } })
       items.value = data.notes ?? []
+      total.value = data.total ?? items.value.length
+      hasMore.value = data.hasMore ?? false
+      _skip = items.value.length
     } finally { loading.value = false }
+  }
+
+  async function loadMore() {
+    if (!hasMore.value || loadingMore.value) return
+    loadingMore.value = true
+    try {
+      const { data } = await api.get('/api/notes', { params: { projectId: _projectId, limit: PAGE, skip: _skip } })
+      const next = data.notes ?? []
+      items.value.push(...next)
+      hasMore.value = data.hasMore ?? false
+      _skip += next.length
+    } finally { loadingMore.value = false }
   }
 
   async function create(projectId, payload) {
     const { data } = await api.post('/api/notes', { projectId, ...payload })
     items.value.unshift(data.nota)
+    total.value++
     return data.nota
   }
 
@@ -30,7 +55,8 @@ export const useNotesStore = defineStore('notes', () => {
   async function remove(id) {
     await api.delete('/api/notes/delete', { data: { id } })
     items.value = items.value.filter(i => i.id !== id)
+    total.value--
   }
 
-  return { items, loading, fetchAll, create, update, remove }
+  return { items, loading, loadingMore, hasMore, total, fetchAll, loadMore, create, update, remove }
 })

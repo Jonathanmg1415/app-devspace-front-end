@@ -31,8 +31,13 @@ const routes = [
       { path: 'changelog',                component: () => import('src/pages/changelog/ChangelogPage.vue') },
     ],
   },
-  // Cualquier ruta no encontrada → login
-  { path: '/:pathMatch(.*)*', redirect: '/auth/login' },
+  // Ruta no encontrada — 404 dentro del app, login si no autenticado
+  {
+    path: '/:pathMatch(.*)*',
+    component: () => import('src/layouts/MainLayout.vue'),
+    meta: { requiresAuth: true },
+    children: [{ path: '', component: () => import('src/pages/errors/NotFoundPage.vue') }],
+  },
 ]
 
 const router = createRouter({

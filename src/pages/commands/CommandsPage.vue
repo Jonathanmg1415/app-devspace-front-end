@@ -86,13 +86,17 @@
       </div>
     </div>
 
-    <div
-      v-if="!items.length && !loading"
-      class="flex flex-center column q-py-xl"
-      style="color: var(--ds-text-3)"
-    >
-      <q-icon name="terminal" size="48px" style="opacity: 0.3" />
-      <p class="q-mt-md" style="font-size: 14px">No hay comandos aún</p>
+    <SkeletonList v-if="loading" :count="4" />
+
+    <div v-else-if="!items.length" class="flex flex-center column q-py-xl" style="color:var(--ds-text-3)">
+      <q-icon name="terminal" size="48px" style="opacity:0.25" />
+      <p style="font-size:14px; margin-top:12px; font-weight:500">Sin comandos guardados</p>
+      <p style="font-size:12px; margin-top:4px">Guarda tus snippets y comandos frecuentes aquí</p>
+    </div>
+
+    <div v-if="hasMore && !loading" class="flex flex-center q-mt-md">
+      <q-btn flat size="sm" label="Cargar más" icon="expand_more"
+        style="color:var(--ds-text-2)" :loading="loadingMore" @click="store.loadMore()" />
     </div>
 
     <!-- Dialog crear / editar -->
@@ -166,13 +170,14 @@ import { ref, computed, onMounted } from "vue";
 import { useRoute } from "vue-router";
 import { useQuasar } from "quasar";
 import { useCommandsStore } from "src/stores/commands";
+import SkeletonList from "src/components/SkeletonList.vue";
 import { storeToRefs } from "pinia";
 import { decodeId } from "src/utils/routeId";
 
 const $q = useQuasar();
 const route = useRoute();
 const store = useCommandsStore();
-const { items, loading } = storeToRefs(store);
+const { items, loading, loadingMore, hasMore } = storeToRefs(store);
 
 const projectId = computed(() => decodeId(route.params.id));
 const openForm = ref(false);

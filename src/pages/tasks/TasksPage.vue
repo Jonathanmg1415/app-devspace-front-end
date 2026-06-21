@@ -55,8 +55,19 @@
       </button>
     </div>
 
+    <!-- Skeleton carga inicial -->
+    <div v-if="loading" class="kanban-wrapper">
+      <div v-for="c in 3" :key="c" class="kanban-col">
+        <div class="kanban-header">
+          <div style="width:8px;height:8px;border-radius:50%;background:var(--ds-bg-2)" />
+          <div style="width:70px;height:10px;background:var(--ds-bg-2);border-radius:4px;animation:skel-pulse 1.4s infinite" />
+        </div>
+        <SkeletonList :count="3" />
+      </div>
+    </div>
+
     <!-- Kanban con drag & drop -->
-    <div class="kanban-wrapper">
+    <div v-else class="kanban-wrapper">
       <div v-for="col in visibleColumns" :key="col.status" class="kanban-col"
         :class="{ 'kanban-col--drag-over': dragOverCol === col.status }"
         @dragover.prevent="dragOverCol = col.status"
@@ -268,6 +279,7 @@ import { ref, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { useQuasar } from 'quasar'
 import { useTasksStore } from 'src/stores/tasks'
+import SkeletonList from 'src/components/SkeletonList.vue'
 import { useMembersStore } from 'src/stores/members'
 import { useAuthStore } from 'src/stores/auth'
 import { useCommentsStore } from 'src/stores/comments'
@@ -280,7 +292,7 @@ const store = useTasksStore()
 const membersStore = useMembersStore()
 const auth = useAuthStore()
 const commentsStore = useCommentsStore()
-const { items: tasks } = storeToRefs(store)
+const { items: tasks, loading } = storeToRefs(store)
 const { members } = storeToRefs(membersStore)
 
 const projectId = computed(() => decodeId(route.params.id))
@@ -518,6 +530,8 @@ function formatTs(ts) {
 </script>
 
 <style scoped>
+@keyframes skel-pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
 /* ── Filter bar ── */
 .filter-bar {
   display: flex;
