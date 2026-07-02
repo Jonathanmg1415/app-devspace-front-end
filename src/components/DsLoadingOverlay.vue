@@ -49,7 +49,7 @@ import { loaderVisible } from 'src/composables/loader'
   border-radius: 8px;
   position: relative;
   will-change: transform;          /* promueve a capa GPU propia */
-  animation: ds-ol-jump 0.7s linear infinite;
+  animation: ds-ol-jump 1.1s linear infinite;
 }
 
 /* Detalle interno tipo GD */
@@ -80,7 +80,7 @@ import { loaderVisible } from 'src/composables/loader'
   margin-top: 4px;
   opacity: 0.45;
   will-change: transform, opacity;
-  animation: ds-ol-shadow 0.7s linear infinite;
+  animation: ds-ol-shadow 1.1s linear infinite;
 }
 
 /* ── Keyframes simplificados (menos pasos = menos trabajo por frame) ── */
