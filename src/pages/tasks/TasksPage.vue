@@ -165,10 +165,8 @@
                 </span>
                 <!-- Asignado -->
                 <div v-if="task.assignee" class="row items-center" style="gap:3px">
-                  <q-avatar size="20px"
-                    :style="typeof task.assignee === 'object' && task.assignee?.avatar
-                      ? {}
-                      : { background:'var(--ds-orange)', color:'#fff', fontSize:'9px', fontWeight:'700' }">
+                  <q-avatar size="26px"
+                    style="background:var(--ds-orange); color:#fff; font-size:11px; font-weight:700; flex-shrink:0">
                     <img v-if="typeof task.assignee === 'object' && task.assignee?.avatar"
                       :src="task.assignee.avatar"
                       style="width:100%;height:100%;object-fit:cover;border-radius:50%" />
@@ -228,10 +226,8 @@
                   {{ dueDateLabel(task.dueDate) }}
                 </span>
                 <div v-if="task.assignee">
-                  <q-avatar size="20px"
-                    :style="typeof task.assignee === 'object' && task.assignee?.avatar
-                      ? {}
-                      : { background:'var(--ds-orange)', color:'#fff', fontSize:'9px', fontWeight:'700' }">
+                  <q-avatar size="26px"
+                    style="background:var(--ds-orange); color:#fff; font-size:11px; font-weight:700; flex-shrink:0">
                     <img v-if="typeof task.assignee === 'object' && task.assignee?.avatar"
                       :src="task.assignee.avatar"
                       style="width:100%;height:100%;object-fit:cover;border-radius:50%" />
@@ -504,7 +500,7 @@ const memberOptions = computed(() => {
   return opts
 })
 
-const assigneeInitial = (u) => (typeof u === 'object' ? u?.name?.[0]?.toUpperCase() : '?')
+const assigneeInitial = (u) => (typeof u === 'object' ? (u?.name?.[0]?.toUpperCase() || '?') : '?')
 
 // ── Tags helpers ──
 const taskTags = (task) => Array.isArray(task.tags) ? task.tags : []

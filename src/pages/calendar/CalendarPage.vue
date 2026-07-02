@@ -10,13 +10,20 @@
       </div>
       <div class="row items-center" style="gap:6px">
         <!-- Shared calendars indicator -->
-        <div v-if="store.members.length" class="row items-center" style="gap:-4px; margin-right:4px">
-          <q-avatar v-for="m in store.members.slice(0,3)" :key="m.id"
-            size="28px"
-            :style="{ background: m.user?.avatar ? 'transparent' : nameToColor(m.user?.name), color:'#fff', fontSize:'11px', fontWeight:'700', border:'2px solid var(--ds-bg-0)', marginLeft: m !== store.members[0] ? '-8px' : '0' }">
+        <div v-if="store.members.length" class="row items-center" style="margin-right:6px">
+          <div v-for="m in store.members.slice(0,3)" :key="m.id"
+            :style="{
+              width: '34px', height: '34px', borderRadius: '50%',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              overflow: 'hidden', flexShrink: '0',
+              border: '2px solid var(--ds-bg-0)',
+              background: m.user?.avatar ? 'transparent' : nameToColor(m.user?.name),
+              color: '#fff', fontSize: '13px', fontWeight: '700',
+              marginLeft: m !== store.members[0] ? '-10px' : '0'
+            }">
             <img v-if="m.user?.avatar" :src="m.user.avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%" />
             <span v-else>{{ m.user?.name?.[0]?.toUpperCase() || '?' }}</span>
-          </q-avatar>
+          </div>
         </div>
         <q-btn flat dense size="sm" icon="people" style="color:var(--ds-text-2); height:34px"
           :label="$q.screen.gt.xs ? 'Compartir' : ''" @click="openShare">
@@ -87,7 +94,7 @@
               :title="ev.owner?.name">
               <img v-if="ev.owner?.avatar" :src="ev.owner.avatar"
                 style="width:100%;height:100%;object-fit:cover;border-radius:50%;display:block" />
-              <span v-else style="color:#fff;font-size:8px;font-weight:700">{{ ev.owner?.name?.[0]?.toUpperCase() }}</span>
+              <span v-else style="color:#fff;font-size:8px;font-weight:700">{{ ev.owner?.name?.[0]?.toUpperCase() || '?' }}</span>
             </span>
           </div>
 
@@ -521,7 +528,7 @@ const USER_PALETTE = [
   '#3B82F6','#0EA5E9','#84CC16','#A855F7','#64748B',
 ]
 function nameToColor(name) {
-  if (!name) return '#6366F1'
+  if (!name) return '#94A3B8'
   let hash = 0
   for (let i = 0; i < name.length; i++) hash = (hash * 31 + name.charCodeAt(i)) >>> 0
   return USER_PALETTE[hash % USER_PALETTE.length]
