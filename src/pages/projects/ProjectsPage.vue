@@ -1,5 +1,7 @@
 <template>
-  <q-page padding>
+  <q-page>
+    <q-scroll-area style="height: calc(100vh - 48px)">
+    <div style="padding: 16px">
     <div class="row items-center q-mb-lg">
       <div class="col">
         <div class="ds-page-title">Proyectos</div>
@@ -76,6 +78,9 @@
         </div>
       </div>
     </div>
+
+    </div>
+    </q-scroll-area>
 
     <!-- Dialog crear / editar -->
     <q-dialog v-model="openCreate" persistent>

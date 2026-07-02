@@ -3,6 +3,9 @@
 
     <q-header>
       <q-toolbar style="padding: 0 8px; min-height: 48px">
+        <q-btn flat round dense icon="menu" size="sm"
+          style="color:var(--ds-text-2); margin-right:2px"
+          @click="drawer = !drawer" />
 <q-toolbar-title style="flex:0 0 auto; padding-right:8px">
           <div class="ds-logo-wrap">
             <div class="ds-logo-icon">
@@ -130,7 +133,7 @@
       </q-toolbar>
     </q-header>
 
-    <q-drawer v-model="drawer" show-if-above :width="200" :breakpoint="768" bordered>
+    <q-drawer v-model="drawer" :width="200" :breakpoint="768" bordered>
       <q-scroll-area class="fit" style="padding-top:8px">
         <q-list>
           <div class="sidebar-section-label">Workspace</div>
@@ -196,7 +199,7 @@ const projectsStore  = useProjectsStore()
 const notifStore     = useNotificationsStore()
 const themeStore     = useThemeStore()
 
-const drawer = ref(true)
+const drawer = ref($q.screen.width >= 768)
 
 function playNotifSound() {
   try {

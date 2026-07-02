@@ -12,8 +12,8 @@
         <!-- Shared calendars indicator -->
         <div v-if="store.members.length" class="row items-center" style="gap:-4px; margin-right:4px">
           <q-avatar v-for="m in store.members.slice(0,3)" :key="m.id"
-            size="22px"
-            :style="{ background: m.user?.avatar ? 'transparent' : nameToColor(m.user?.name), color:'#fff', fontSize:'9px', fontWeight:'700', border:'2px solid var(--ds-bg-0)', marginLeft: m !== store.members[0] ? '-6px' : '0' }">
+            size="28px"
+            :style="{ background: m.user?.avatar ? 'transparent' : nameToColor(m.user?.name), color:'#fff', fontSize:'11px', fontWeight:'700', border:'2px solid var(--ds-bg-0)', marginLeft: m !== store.members[0] ? '-8px' : '0' }">
             <img v-if="m.user?.avatar" :src="m.user.avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%" />
             <span v-else>{{ m.user?.name?.[0]?.toUpperCase() || '?' }}</span>
           </q-avatar>
@@ -659,10 +659,10 @@ function eventStyle(ev) {
 }
 .cal-event-title { flex: 1; overflow: hidden; text-overflow: ellipsis; }
 .cal-event-avatar {
-  width: 13px;
-  height: 13px;
+  width: 18px;
+  height: 18px;
   border-radius: 50%;
-  font-size: 8px;
+  font-size: 9px;
   font-weight: 700;
   display: flex;
   align-items: center;

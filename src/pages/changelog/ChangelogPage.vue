@@ -1,5 +1,6 @@
 <template>
   <q-page>
+    <q-scroll-area style="height: calc(100vh - 48px)">
     <div class="changelog-content">
       <div class="changelog-hero">
         <div class="changelog-badge">Alpha</div>
@@ -44,6 +45,7 @@
         DevSpace v{{ currentVersion }} · Alpha · Hecho con ☕ y mucho código
       </div>
     </div>
+    </q-scroll-area>
   </q-page>
 </template>
 

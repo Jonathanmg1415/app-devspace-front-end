@@ -165,8 +165,14 @@
                 </span>
                 <!-- Asignado -->
                 <div v-if="task.assignee" class="row items-center" style="gap:3px">
-                  <q-avatar size="18px" :style="{ background:'var(--ds-orange)', color:'#fff', fontSize:'9px', fontWeight:'700' }">
-                    {{ assigneeInitial(task.assignee) }}
+                  <q-avatar size="20px"
+                    :style="typeof task.assignee === 'object' && task.assignee?.avatar
+                      ? {}
+                      : { background:'var(--ds-orange)', color:'#fff', fontSize:'9px', fontWeight:'700' }">
+                    <img v-if="typeof task.assignee === 'object' && task.assignee?.avatar"
+                      :src="task.assignee.avatar"
+                      style="width:100%;height:100%;object-fit:cover;border-radius:50%" />
+                    <span v-else>{{ assigneeInitial(task.assignee) }}</span>
                   </q-avatar>
                   <q-btn flat round dense size="xs" icon="close"
                     style="color:var(--ds-text-3); margin:-2px"
@@ -222,8 +228,14 @@
                   {{ dueDateLabel(task.dueDate) }}
                 </span>
                 <div v-if="task.assignee">
-                  <q-avatar size="20px" :style="{ background:'var(--ds-orange)', color:'#fff', fontSize:'9px', fontWeight:'700' }">
-                    {{ assigneeInitial(task.assignee) }}
+                  <q-avatar size="20px"
+                    :style="typeof task.assignee === 'object' && task.assignee?.avatar
+                      ? {}
+                      : { background:'var(--ds-orange)', color:'#fff', fontSize:'9px', fontWeight:'700' }">
+                    <img v-if="typeof task.assignee === 'object' && task.assignee?.avatar"
+                      :src="task.assignee.avatar"
+                      style="width:100%;height:100%;object-fit:cover;border-radius:50%" />
+                    <span v-else>{{ assigneeInitial(task.assignee) }}</span>
                   </q-avatar>
                 </div>
                 <q-btn flat round dense size="xs" icon="more_vert" style="color:var(--ds-text-3)" @click.stop>
@@ -257,7 +269,7 @@
             {{ editingTask ? 'Editar tarea' : 'Nueva tarea' }}
           </div>
         </q-card-section>
-        <q-scroll-area style="flex:1">
+        <div style="flex:1; min-height:0; overflow-y:auto">
           <q-card-section style="padding:16px 24px" class="q-gutter-sm">
             <q-input v-model="form.title" label="Título" outlined dense />
             <q-input v-model="form.description" label="Descripción" outlined dense type="textarea" rows="2" />
@@ -318,7 +330,7 @@
               </div>
             </div>
           </q-card-section>
-        </q-scroll-area>
+        </div>
         <q-card-actions align="right" style="padding:8px 24px 20px; flex-shrink:0; border-top:1px solid var(--ds-border)">
           <q-btn flat label="Cancelar" size="sm" @click="closeForm" style="color:var(--ds-text-2)" />
           <q-btn color="primary" :label="editingTask ? 'Guardar' : 'Crear'" size="sm"
