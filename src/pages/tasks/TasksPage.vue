@@ -165,13 +165,12 @@
                 </span>
                 <!-- Asignado -->
                 <div v-if="task.assignee" class="row items-center" style="gap:3px">
-                  <q-avatar size="26px"
-                    style="background:var(--ds-orange); color:#fff; font-size:11px; font-weight:700; flex-shrink:0">
+                  <div style="width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;overflow:hidden;background:var(--ds-orange);color:#fff;font-size:13px;font-weight:700;flex-shrink:0">
                     <img v-if="typeof task.assignee === 'object' && task.assignee?.avatar"
                       :src="task.assignee.avatar"
                       style="width:100%;height:100%;object-fit:cover;border-radius:50%" />
                     <span v-else>{{ assigneeInitial(task.assignee) }}</span>
-                  </q-avatar>
+                  </div>
                   <q-btn flat round dense size="xs" icon="close"
                     style="color:var(--ds-text-3); margin:-2px"
                     @click.stop="clearAssignee(task)">
@@ -226,13 +225,12 @@
                   {{ dueDateLabel(task.dueDate) }}
                 </span>
                 <div v-if="task.assignee">
-                  <q-avatar size="26px"
-                    style="background:var(--ds-orange); color:#fff; font-size:11px; font-weight:700; flex-shrink:0">
+                  <div style="width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;overflow:hidden;background:var(--ds-orange);color:#fff;font-size:13px;font-weight:700;flex-shrink:0">
                     <img v-if="typeof task.assignee === 'object' && task.assignee?.avatar"
                       :src="task.assignee.avatar"
                       style="width:100%;height:100%;object-fit:cover;border-radius:50%" />
                     <span v-else>{{ assigneeInitial(task.assignee) }}</span>
-                  </q-avatar>
+                  </div>
                 </div>
                 <q-btn flat round dense size="xs" icon="more_vert" style="color:var(--ds-text-3)" @click.stop>
                   <q-menu>
