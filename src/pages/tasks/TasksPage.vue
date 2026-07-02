@@ -165,7 +165,7 @@
                 </span>
                 <!-- Asignado -->
                 <div v-if="task.assignee" class="row items-center" style="gap:3px">
-                  <div style="width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;overflow:hidden;background:var(--ds-orange);color:#fff;font-size:13px;font-weight:700;flex-shrink:0">
+                  <div style="width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;overflow:hidden;background:var(--ds-orange);color:#fff;font-size:11px;font-weight:700;flex-shrink:0">
                     <img v-if="typeof task.assignee === 'object' && task.assignee?.avatar"
                       :src="task.assignee.avatar"
                       style="width:100%;height:100%;object-fit:cover;border-radius:50%" />
@@ -225,7 +225,7 @@
                   {{ dueDateLabel(task.dueDate) }}
                 </span>
                 <div v-if="task.assignee">
-                  <div style="width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;overflow:hidden;background:var(--ds-orange);color:#fff;font-size:13px;font-weight:700;flex-shrink:0">
+                  <div style="width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;overflow:hidden;background:var(--ds-orange);color:#fff;font-size:11px;font-weight:700;flex-shrink:0">
                     <img v-if="typeof task.assignee === 'object' && task.assignee?.avatar"
                       :src="task.assignee.avatar"
                       style="width:100%;height:100%;object-fit:cover;border-radius:50%" />

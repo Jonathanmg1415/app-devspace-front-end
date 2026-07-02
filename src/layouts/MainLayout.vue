@@ -47,7 +47,8 @@
               </div>
               <div v-for="n in notifStore.items" :key="n.id"
                 class="notif-item" :class="{ 'notif-item--unread': !n.read }"
-                @click="notifStore.markRead(n.id)">
+                v-close-popup
+                @click="handleNotifClick(n)">
                 <div class="notif-dot" v-if="!n.read" />
                 <div style="flex:1; min-width:0">
                   <div style="font-size:12px; font-weight:500; color:var(--ds-text-1); line-height:1.4">{{ n.title }}</div>
@@ -230,6 +231,18 @@ onMounted(async () => {
     if (notifStore.unread > prevUnread) playNotifSound()
   }, 30 * 1000)
 })
+
+function handleNotifClick(n) {
+  notifStore.markRead(n.id)
+  const pid = n.project
+  if ((n.type === 'task_assigned' || n.type === 'comment_added') && pid) {
+    router.push(`/projects/${pid}/tasks`)
+  } else if (n.type === 'project_invitation' && pid) {
+    router.push(`/projects/${pid}`)
+  } else if (n.type === 'calendar_shared') {
+    router.push('/calendar')
+  }
+}
 
 function formatNotifTime(ts) {
   if (!ts) return ''
