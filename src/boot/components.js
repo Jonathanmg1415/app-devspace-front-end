@@ -1,15 +1,7 @@
 import { boot } from 'quasar/wrappers'
-import { Loading } from 'quasar'
 import DsSpinner from 'src/components/DsSpinner.vue'
 
 export default boot(({ app }) => {
+  // Registrar DsSpinner globalmente (para usar en botones via <template #loading>)
   app.component('DsSpinner', DsSpinner)
-
-  Loading.setDefaults({
-    spinner: DsSpinner,
-    spinnerSize: 32,
-    spinnerColor: undefined,
-    backgroundColor: 'rgba(0,0,0,0.55)',
-    message: '',
-  })
 })

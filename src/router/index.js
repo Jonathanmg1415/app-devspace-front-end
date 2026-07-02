@@ -27,6 +27,7 @@ const routes = [
       { path: 'projects/:id/notes',       component: () => import('src/pages/notes/NotesPage.vue') },
       { path: 'projects/:id/files',       component: () => import('src/pages/files/FilesPage.vue') },
       { path: 'projects/:id/activity',   component: () => import('src/pages/activity/ActivityPage.vue') },
+      { path: 'my-tasks',                  component: () => import('src/pages/tasks/MyTasksPage.vue') },
       { path: 'calendar',                  component: () => import('src/pages/calendar/CalendarPage.vue') },
       { path: 'search',                   component: () => import('src/pages/search/SearchPage.vue') },
       { path: 'profile',                  component: () => import('src/pages/profile/ProfilePage.vue') },
@@ -53,28 +54,13 @@ export function setupRouterGuards(pinia) {
   router.beforeEach(() => { LoadingBar.start() })
   router.afterEach(() => { LoadingBar.stop() })
 
-  router.beforeEach(async (to) => {
-    // Si hay token pero no tenemos el usuario cargado, validamos contra la API
-    if (auth.token && !auth.user) {
-      try {
-        await auth.fetchMe()
-      } catch (err) {
-        // Solo deslogueamos en 401 (token inválido/expirado).
-        // Errores de red o 500 no deben sacar al usuario de la app.
-        const status = err?.response?.status
-        if (status === 401) {
-          auth.logout()
-          if (to.meta.requiresAuth) return { path: '/auth/login' }
-        }
-        // Para cualquier otro error asumimos que el token sigue siendo válido
-        // y dejamos pasar — la pantalla cargará con lo que tenga en memoria.
-      }
-    }
-
-    if (to.meta.requiresAuth && !auth.isAuthenticated) {
+  router.beforeEach((to) => {
+    // Solo verificamos si hay token — la validación real contra la API
+    // ocurre en App.vue (onMounted) para no bloquear la navegación inicial.
+    if (to.meta.requiresAuth && !auth.token) {
       return { path: '/auth/login' }
     }
-    if (to.path.startsWith('/auth') && auth.isAuthenticated) {
+    if (to.path.startsWith('/auth') && auth.token) {
       return { path: '/projects' }
     }
   })

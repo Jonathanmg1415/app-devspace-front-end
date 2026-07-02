@@ -65,7 +65,7 @@
     </div>
 
     <!-- Skeleton carga inicial -->
-    <SkeletonList v-if="loading" variant="kanban" />
+    <SkeletonList v-if="loading && !tasks.length" variant="kanban" />
 
     <!-- ─── VISTA KANBAN ─── -->
     <div v-else-if="viewMode === 'kanban'" class="kanban-wrapper">
@@ -323,7 +323,9 @@
           <q-btn flat label="Cancelar" size="sm" @click="closeForm" style="color:var(--ds-text-2)" />
           <q-btn color="primary" :label="editingTask ? 'Guardar' : 'Crear'" size="sm"
             :loading="saving" style="min-width:72px; height:34px"
-            @click="editingTask ? handleEdit() : handleCreate()" />
+            @click="editingTask ? handleEdit() : handleCreate()">
+            <template #loading><DsSpinner size="sm" /></template>
+          </q-btn>
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -341,7 +343,7 @@
           </div>
         </q-card-section>
         <q-card-section style="flex:1; overflow-y:auto; padding:16px 24px">
-          <div v-if="commentsStore.loading" class="flex flex-center q-py-lg"><q-spinner size="24px" color="primary" /></div>
+          <div v-if="commentsStore.loading" class="flex flex-center q-py-lg"><DsSpinner size="md" /></div>
           <div v-else-if="!commentsStore.items.length" class="flex flex-center column q-py-lg" style="color:var(--ds-text-3)">
             <q-icon name="chat_bubble_outline" size="32px" style="opacity:0.35" />
             <p style="font-size:13px; margin-top:8px">Sin comentarios aún</p>
@@ -390,7 +392,9 @@
         </q-card-section>
         <q-card-actions align="right" style="padding:0 24px 20px; gap:8px">
           <q-btn flat label="Cancelar" size="sm" v-close-popup style="color:var(--ds-text-2)" />
-          <q-btn color="primary" label="Guardar" size="sm" :loading="saving" style="min-width:72px; height:34px" @click="saveAssign" />
+          <q-btn color="primary" label="Guardar" size="sm" :loading="saving" style="min-width:72px; height:34px" @click="saveAssign">
+            <template #loading><DsSpinner size="sm" /></template>
+          </q-btn>
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -401,6 +405,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { useQuasar } from 'quasar'
+import DsSpinner from 'src/components/DsSpinner.vue'
 import { useTasksStore } from 'src/stores/tasks'
 import SkeletonList from 'src/components/SkeletonList.vue'
 import { useMembersStore } from 'src/stores/members'

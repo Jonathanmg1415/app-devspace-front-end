@@ -1,11 +1,23 @@
 import { boot } from 'quasar/wrappers'
 import axios from 'axios'
 import { Notify } from 'quasar'
+import { loaderShow, loaderHide } from 'src/composables/loader'
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:1337',
   timeout: 15000,
 })
+
+// GET requests que cargan páginas muestran el overlay; estas se saltan
+const SKIP_URLS = ['/notifications', '/health', '/auth/me']
+let _activeLoads = 0
+
+function shouldTrack(config) {
+  if (!config) return false
+  if ((config.method || '').toLowerCase() !== 'get') return false
+  const url = config.url || ''
+  return !SKIP_URLS.some(s => url.includes(s))
+}
 
 export default boot(({ app }) => {
   Notify.setDefaults({
@@ -17,21 +29,42 @@ export default boot(({ app }) => {
   api.interceptors.request.use((config) => {
     const token = localStorage.getItem('devspace_token')
     if (token) config.headers.Authorization = `Bearer ${token}`
+
+    if (shouldTrack(config)) {
+      _activeLoads++
+      if (_activeLoads === 1) loaderShow()
+    }
+
     return config
   })
 
   api.interceptors.response.use(
-    (res) => res,
+    (res) => {
+      if (shouldTrack(res.config)) {
+        _activeLoads = Math.max(0, _activeLoads - 1)
+        if (_activeLoads === 0) loaderHide()
+      }
+      return res
+    },
     (err) => {
+      if (shouldTrack(err.config)) {
+        _activeLoads = Math.max(0, _activeLoads - 1)
+        if (_activeLoads === 0) loaderHide()
+      }
+
       const status = err.response?.status
 
       if (status === 401) {
-        localStorage.removeItem('devspace_token')
-        window.location.href = '/auth/login'
+        // /auth/me lo maneja App.vue — evitamos el hard-redirect aquí
+        // para no competir con el flujo de onMounted
+        const url = err.config?.url || ''
+        if (!url.includes('/auth/me')) {
+          localStorage.removeItem('devspace_token')
+          window.location.href = '/auth/login'
+        }
         return Promise.reject(err)
       }
 
-      // Error de red / timeout / servidor caído
       if (!err.response) {
         Notify.create({
           type: 'negative',
@@ -61,9 +94,7 @@ export default boot(({ app }) => {
 
   // Keep-alive: ping cada 10 min para que Render no duerma el servidor
   const PING_URL = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:1337') + '/api/health'
-  setInterval(() => {
-    fetch(PING_URL).catch(() => {})
-  }, 10 * 60 * 1000)
+  setInterval(() => { fetch(PING_URL).catch(() => {}) }, 10 * 60 * 1000)
 })
 
 export { api }

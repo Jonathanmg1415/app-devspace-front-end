@@ -138,6 +138,10 @@
             <q-item-section avatar><q-icon name="grid_view" size="15px" /></q-item-section>
             <q-item-section>Proyectos</q-item-section>
           </q-item>
+          <q-item clickable v-ripple :to="{ path: '/my-tasks' }" class="sidebar-item">
+            <q-item-section avatar><q-icon name="assignment" size="15px" /></q-item-section>
+            <q-item-section>Mis tareas</q-item-section>
+          </q-item>
           <q-item clickable v-ripple :to="{ path: '/calendar' }" class="sidebar-item">
             <q-item-section avatar><q-icon name="calendar_month" size="15px" /></q-item-section>
             <q-item-section>Calendario</q-item-section>
@@ -168,11 +172,7 @@
     </q-drawer>
 
     <q-page-container>
-      <router-view v-slot="{ Component }">
-        <transition name="page-fade" mode="out-in">
-          <component :is="Component" />
-        </transition>
-      </router-view>
+      <router-view />
     </q-page-container>
 
   </q-layout>

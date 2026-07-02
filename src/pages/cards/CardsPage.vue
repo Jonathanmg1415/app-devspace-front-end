@@ -142,12 +142,9 @@
         </q-card-section>
         <q-card-actions align="right">
           <q-btn flat label="Cancelar" v-close-popup />
-          <q-btn
-            color="primary"
-            label="Crear"
-            :loading="saving"
-            @click="handleCreate"
-          />
+          <q-btn color="primary" label="Crear" :loading="saving" @click="handleCreate">
+            <template #loading><DsSpinner size="sm" /></template>
+          </q-btn>
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -158,6 +155,7 @@
 import { ref, computed, onMounted } from "vue";
 import { useRoute } from "vue-router";
 import { useI18n } from "vue-i18n";
+import DsSpinner from 'src/components/DsSpinner.vue'
 import { useQuasar } from "quasar";
 import { useCardsStore } from "src/stores/cards";
 import { storeToRefs } from "pinia";

@@ -164,6 +164,7 @@
 import { ref, computed, onMounted, nextTick } from 'vue'
 import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
+import DsSpinner from 'src/components/DsSpinner.vue'
 import { useQuasar } from 'quasar'
 import { useNotesStore } from 'src/stores/notes'
 import { storeToRefs } from 'pinia'

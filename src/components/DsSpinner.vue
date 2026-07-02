@@ -24,6 +24,7 @@ defineProps({
 .ds-gd--sm  { --sz: 14px; }
 .ds-gd--md  { --sz: 20px; }
 .ds-gd--lg  { --sz: 28px; }
+.ds-gd--xl  { --sz: 54px; }
 
 /* ── Cube ── */
 .ds-gd-cube {
@@ -33,8 +34,9 @@ defineProps({
   background: var(--ds-orange);
   border-radius: 3px;
   box-shadow:
-    inset -3px -3px 0 rgba(0,0,0,0.22),
-    0 0 8px rgba(var(--ds-accent-rgb) / 0.5);
+    inset -4px -4px 0 rgba(0,0,0,0.25),
+    0 0 18px rgba(var(--ds-accent-rgb) / 0.65),
+    0 0 40px rgba(var(--ds-accent-rgb) / 0.25);
   animation: gd-jump 0.65s cubic-bezier(0.33, 0, 0.66, 1) infinite;
   position: relative;
   transform-origin: center bottom;

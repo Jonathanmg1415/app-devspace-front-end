@@ -135,7 +135,9 @@
         <q-card-actions align="right" style="padding:0 24px 20px; gap:8px">
           <q-btn flat label="Cancelar" size="sm" v-close-popup @click="resetForm" style="color:var(--ds-text-2)" />
           <q-btn color="primary" :label="editing ? 'Guardar' : 'Crear'" size="sm"
-            :loading="saving" :disable="saving" @click="handleSubmit" style="min-width:80px; height:34px" />
+            :loading="saving" :disable="saving" @click="handleSubmit" style="min-width:80px; height:34px">
+            <template #loading><DsSpinner size="sm" /></template>
+          </q-btn>
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -146,6 +148,7 @@
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useQuasar } from 'quasar'
+import DsSpinner from 'src/components/DsSpinner.vue'
 import { useProjectsStore } from 'src/stores/projects'
 import { useTasksStore } from 'src/stores/tasks'
 import { storeToRefs } from 'pinia'
