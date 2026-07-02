@@ -5,7 +5,7 @@ import { api } from 'src/boot/axios'
 export const useProjectsStore = defineStore('projects', () => {
   const projects = ref([])
   const current  = ref(null)
-  const loading  = ref(false)
+  const loading  = ref(true)
 
   async function fetchAll() {
   loading.value = true

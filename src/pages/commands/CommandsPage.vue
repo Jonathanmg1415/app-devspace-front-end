@@ -17,7 +17,9 @@
       />
     </div>
 
-    <div class="row q-gutter-md">
+    <SkeletonList v-if="loading && !items.length" variant="command" :count="4" />
+
+    <div v-else class="row q-gutter-md">
       <div
         v-for="cmd in items"
         :key="cmd.id"
@@ -39,21 +41,21 @@
                 {{ cmd.description }}
               </div>
             </div>
-            <q-btn
-              flat round dense size="xs"
-              icon="edit_outlined"
-              style="color: var(--ds-text-3)"
-              @click="startEdit(cmd)"
-            >
-              <q-tooltip>Editar</q-tooltip>
-            </q-btn>
-            <q-btn
-              flat round dense size="xs"
-              icon="delete_outline"
-              style="color: var(--ds-text-3)"
-              @click="confirmDelete(cmd)"
-            >
-              <q-tooltip>Eliminar</q-tooltip>
+            <q-btn flat round dense size="xs" icon="more_vert"
+              style="color: var(--ds-text-3)" @click.stop>
+              <q-menu>
+                <q-list style="min-width:130px; padding:4px">
+                  <q-item clickable v-close-popup @click="startEdit(cmd)" style="border-radius:6px">
+                    <q-item-section avatar style="min-width:28px"><q-icon name="edit" size="13px" /></q-item-section>
+                    <q-item-section style="font-size:13px">Editar</q-item-section>
+                  </q-item>
+                  <q-item clickable v-close-popup @click="confirmDelete(cmd)"
+                    style="border-radius:6px; color:var(--ds-negative)">
+                    <q-item-section avatar style="min-width:28px"><q-icon name="delete_outline" size="13px" /></q-item-section>
+                    <q-item-section style="font-size:13px">Eliminar</q-item-section>
+                  </q-item>
+                </q-list>
+              </q-menu>
             </q-btn>
           </div>
 
@@ -86,13 +88,10 @@
       </div>
     </div>
 
-    <SkeletonList v-if="loading" :count="4" />
-
-    <div v-else-if="!items.length" class="flex flex-center column q-py-xl" style="color:var(--ds-text-3)">
-      <q-icon name="terminal" size="48px" style="opacity:0.25" />
-      <p style="font-size:14px; margin-top:12px; font-weight:500">Sin comandos guardados</p>
-      <p style="font-size:12px; margin-top:4px">Guarda tus snippets y comandos frecuentes aquí</p>
-    </div>
+    <EmptyState v-if="!loading && !items.length"
+      icon="terminal"
+      title="Sin comandos guardados"
+      subtitle="Guarda tus snippets y comandos frecuentes para copiarlos con un clic cuando los necesites" />
 
     <div v-if="hasMore && !loading" class="flex flex-center q-mt-md">
       <q-btn flat size="sm" label="Cargar más" icon="expand_more"
@@ -158,7 +157,9 @@
             :loading="saving"
             style="min-width: 72px; height: 34px"
             @click="handleSubmit"
-          />
+          >
+            <template #loading><DsSpinner size="sm" /></template>
+          </q-btn>
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -171,6 +172,7 @@ import { useRoute } from "vue-router";
 import { useQuasar } from "quasar";
 import { useCommandsStore } from "src/stores/commands";
 import SkeletonList from "src/components/SkeletonList.vue";
+import EmptyState from "src/components/EmptyState.vue";
 import { storeToRefs } from "pinia";
 import { decodeId } from "src/utils/routeId";
 

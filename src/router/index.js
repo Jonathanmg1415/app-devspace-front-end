@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import { LoadingBar } from 'quasar'
 import { useAuthStore } from 'src/stores/auth'
 
 const routes = [
@@ -26,6 +27,7 @@ const routes = [
       { path: 'projects/:id/notes',       component: () => import('src/pages/notes/NotesPage.vue') },
       { path: 'projects/:id/files',       component: () => import('src/pages/files/FilesPage.vue') },
       { path: 'projects/:id/activity',   component: () => import('src/pages/activity/ActivityPage.vue') },
+      { path: 'calendar',                  component: () => import('src/pages/calendar/CalendarPage.vue') },
       { path: 'search',                   component: () => import('src/pages/search/SearchPage.vue') },
       { path: 'profile',                  component: () => import('src/pages/profile/ProfilePage.vue') },
       { path: 'changelog',                component: () => import('src/pages/changelog/ChangelogPage.vue') },
@@ -48,15 +50,24 @@ const router = createRouter({
 export function setupRouterGuards(pinia) {
   const auth = useAuthStore(pinia)
 
+  router.beforeEach(() => { LoadingBar.start() })
+  router.afterEach(() => { LoadingBar.stop() })
+
   router.beforeEach(async (to) => {
     // Si hay token pero no tenemos el usuario cargado, validamos contra la API
     if (auth.token && !auth.user) {
       try {
         await auth.fetchMe()
-      } catch {
-        // Token inválido o expirado — limpiamos y mandamos al login
-        auth.logout()
-        if (to.meta.requiresAuth) return { path: '/auth/login' }
+      } catch (err) {
+        // Solo deslogueamos en 401 (token inválido/expirado).
+        // Errores de red o 500 no deben sacar al usuario de la app.
+        const status = err?.response?.status
+        if (status === 401) {
+          auth.logout()
+          if (to.meta.requiresAuth) return { path: '/auth/login' }
+        }
+        // Para cualquier otro error asumimos que el token sigue siendo válido
+        // y dejamos pasar — la pantalla cargará con lo que tenga en memoria.
       }
     }
 

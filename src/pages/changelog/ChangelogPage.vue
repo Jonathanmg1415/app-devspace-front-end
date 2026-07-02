@@ -50,11 +50,41 @@
 <script setup>
 import { ref } from 'vue'
 
-const currentVersion = '0.4.0'
+const currentVersion = '0.6.0'
 
 const badgeLabel = t => ({ new: 'Nuevo', fix: 'Fix', improve: 'Mejora', breaking: 'Cambio' }[t] || t)
 
 const releases = [
+  {
+    version: 'v0.6.0',
+    type: 'alpha',
+    date: '1 Jul 2026',
+    title: 'Animaciones, temas y personalización',
+    changes: [
+      { type: 'new',     text: 'Selector de tema de color: elige entre 16 paletas de acento que cambian al instante en toda la app sin recargar.' },
+      { type: 'new',     text: 'Foto de perfil: sube tu imagen desde el perfil; se comprime automáticamente antes de guardar.' },
+      { type: 'new',     text: 'Animador de carga personalizado: un cuadrito saltarín tipo Geometry Dash reemplaza los spinners genéricos.' },
+      { type: 'new',     text: 'Calendario mejorado: colores únicos por persona, ícono según tipo de evento y borde punteado para eventos compartidos.' },
+      { type: 'improve', text: 'El diseño visual ahora usa glassmorphism, gradientes sutiles y sombras dinámicas que siguen el color de acento.' },
+      { type: 'improve', text: 'Animaciones de entrada stagger en todas las páginas: los elementos aparecen escalonados de forma suave.' },
+      { type: 'improve', text: 'Los tokens están ahora en 30 días; recargar la página ya no redirige al login.' },
+      { type: 'fix',     text: 'La hora de los eventos del calendario ya se guarda correctamente respetando la zona horaria local.' },
+      { type: 'fix',     text: 'La foto de perfil en formato PNG ya no se ve negra al subirla.' },
+    ],
+  },
+  {
+    version: 'v0.5.0',
+    type: 'alpha',
+    date: '28 Jun 2026',
+    title: 'Sin parpadeos en la carga',
+    changes: [
+      { type: 'improve', text: 'Todas las páginas muestran un skeleton animado desde el primer frame; el contenido nunca parpadea al cargar.' },
+      { type: 'improve', text: 'Nuevo skeleton para el dashboard del proyecto: donut, estadísticas y actividad se precientran con placeholders antes de llegar los datos.' },
+      { type: 'improve', text: 'Las páginas de Tareas, Notas, Comandos, Links, Archivos y Cards tienen esqueletos propios según su layout.' },
+      { type: 'improve', text: 'Los stores de datos ya arrancan en estado loading=true para evitar el flash de pantalla vacía.' },
+      { type: 'fix',     text: 'La notificación "createdAt = 0" que ensuciaba la consola queda eliminada con una corrección de datos en base de datos.' },
+    ],
+  },
   {
     version: 'v0.4.0',
     type: 'alpha',

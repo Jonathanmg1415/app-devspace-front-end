@@ -6,7 +6,7 @@ const PAGE = 100
 
 export const useTasksStore = defineStore('tasks', () => {
   const items      = ref([])
-  const loading    = ref(false)
+  const loading    = ref(true)
   const loadingMore = ref(false)
   const hasMore    = ref(false)
   const total      = ref(0)

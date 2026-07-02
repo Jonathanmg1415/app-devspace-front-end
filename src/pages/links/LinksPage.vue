@@ -17,13 +17,12 @@
       />
     </div>
 
-    <SkeletonList v-if="loading" :count="5" />
+    <SkeletonList v-if="loading && !items.length" variant="list" :count="5" />
 
-    <div v-else-if="!items.length" class="flex flex-center column q-py-xl" style="color:var(--ds-text-3)">
-      <q-icon name="link" size="48px" style="opacity:0.25" />
-      <p style="font-size:14px; margin-top:12px; font-weight:500">Sin links guardados</p>
-      <p style="font-size:12px; margin-top:4px">Guarda URLs importantes de tu proyecto aquí</p>
-    </div>
+    <EmptyState v-else-if="!loading && !items.length"
+      icon="link"
+      title="Sin links guardados"
+      subtitle="Centraliza las URLs importantes del proyecto para acceder rápido desde aquí" />
 
     <div v-if="hasMore && !loading" class="flex flex-center q-mt-md">
       <q-btn flat size="sm" label="Cargar más" icon="expand_more"
@@ -136,7 +135,9 @@
             :loading="saving"
             style="min-width: 72px; height: 34px"
             @click="handleCreate"
-          />
+          >
+            <template #loading><DsSpinner size="sm" /></template>
+          </q-btn>
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -151,6 +152,7 @@ import { useLinksStore } from "src/stores/links";
 import { storeToRefs } from "pinia";
 import { decodeId } from "src/utils/routeId";
 import SkeletonList from "src/components/SkeletonList.vue";
+import EmptyState from "src/components/EmptyState.vue";
 
 const $q = useQuasar();
 const route = useRoute();

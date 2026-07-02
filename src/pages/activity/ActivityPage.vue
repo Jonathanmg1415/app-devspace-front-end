@@ -13,15 +13,12 @@
       </q-btn>
     </div>
 
-    <div v-if="loading && !events.length" class="flex flex-center q-py-xl">
-      <q-spinner size="32px" color="primary" />
-    </div>
+    <SkeletonList v-if="loading && !events.length" variant="list" :count="6" />
 
-    <div v-else-if="!events.length" class="flex flex-center column q-py-xl" style="color:var(--ds-text-3)">
-      <q-icon name="timeline" size="48px" style="opacity:0.25" />
-      <p style="font-size:14px; margin-top:12px">Sin actividad registrada aún</p>
-      <p style="font-size:12px; margin-top:4px">Las acciones del equipo aparecerán aquí</p>
-    </div>
+    <EmptyState v-else-if="!events.length"
+      icon="timeline"
+      title="Sin actividad aún"
+      subtitle="Aquí verás un registro de todo lo que ocurre en el proyecto: tareas, notas, comentarios y más" />
 
     <div v-else class="activity-feed">
       <div v-for="event in events" :key="event.id" class="activity-item">
@@ -52,6 +49,8 @@ import { ref, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { api } from 'src/boot/axios'
 import { decodeId } from 'src/utils/routeId'
+import SkeletonList from 'src/components/SkeletonList.vue'
+import EmptyState from 'src/components/EmptyState.vue'
 
 const route = useRoute()
 const projectId = computed(() => decodeId(route.params.id))

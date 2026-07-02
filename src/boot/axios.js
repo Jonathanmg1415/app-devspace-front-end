@@ -8,6 +8,12 @@ const api = axios.create({
 })
 
 export default boot(({ app }) => {
+  Notify.setDefaults({
+    position: 'bottom-right',
+    timeout: 2500,
+    actions: [{ icon: 'close', color: 'white', dense: true, size: 'xs', flat: true }],
+  })
+
   api.interceptors.request.use((config) => {
     const token = localStorage.getItem('devspace_token')
     if (token) config.headers.Authorization = `Bearer ${token}`
@@ -29,22 +35,21 @@ export default boot(({ app }) => {
       if (!err.response) {
         Notify.create({
           type: 'negative',
-          message: 'Sin conexión con el servidor. Verifica tu conexión.',
+          message: 'Sin conexión al servidor',
+          caption: 'Verifica tu conexión e intenta de nuevo',
           icon: 'cloud_off',
-          timeout: 4000,
-          position: 'top',
+          timeout: 5000,
         })
         return Promise.reject(err)
       }
 
-      // Error 5xx
       if (status >= 500) {
         Notify.create({
           type: 'negative',
-          message: 'Error interno del servidor. Intenta de nuevo en unos segundos.',
+          message: 'Error interno del servidor',
+          caption: 'Intenta de nuevo en unos segundos',
           icon: 'error_outline',
           timeout: 4000,
-          position: 'top',
         })
       }
 
@@ -53,6 +58,12 @@ export default boot(({ app }) => {
   )
 
   app.config.globalProperties.$api = api
+
+  // Keep-alive: ping cada 10 min para que Render no duerma el servidor
+  const PING_URL = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:1337') + '/api/health'
+  setInterval(() => {
+    fetch(PING_URL).catch(() => {})
+  }, 10 * 60 * 1000)
 })
 
 export { api }

@@ -4,7 +4,7 @@ import { api } from 'src/boot/axios'
 
 export const useCardsStore = defineStore('cards', () => {
   const items   = ref([])
-  const loading = ref(false)
+  const loading = ref(true)
 
   async function fetchAll(projectId) {
     loading.value = true

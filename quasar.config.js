@@ -2,7 +2,7 @@ import { configure } from 'quasar/wrappers'
 
 module.exports = configure(function (ctx) {
   return {
-    boot: ['axios', 'i18n'],
+    boot: ['axios', 'i18n', 'components'],
     css: ['app.scss'],
     extras: ['material-icons', 'mdi-v7'],
     build: {
@@ -14,8 +14,12 @@ module.exports = configure(function (ctx) {
     },
     devServer: { open: true },
     framework: {
-      config: { dark: 'auto' },
-      plugins: ['Notify', 'Dialog', 'Loading', 'LocalStorage', 'Cookies'],
+      config: {
+        dark: 'auto',
+        loadingBar: { color: '#F97316', size: '2px', position: 'top' },
+        notify:     { position: 'bottom-right', timeout: 2500 },
+      },
+      plugins: ['Notify', 'Dialog', 'Loading', 'LoadingBar', 'LocalStorage', 'Cookies'],
     },
     animations: [],
     ssr: { pwa: false },

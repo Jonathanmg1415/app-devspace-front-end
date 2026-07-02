@@ -42,14 +42,12 @@
       </div>
     </div>
 
-    <div v-if="loading" class="flex flex-center q-py-xl">
-      <q-spinner size="48px" color="primary" />
-    </div>
+    <SkeletonList v-if="loading && !files.length" variant="list" :count="4" />
 
-    <div v-else-if="!files.length" class="flex flex-center column q-py-xl" style="color:var(--ds-text-3)">
-      <q-icon name="folder_open" size="56px" />
-      <p class="q-mt-md" style="font-size:13px">No hay archivos en este proyecto aún.</p>
-    </div>
+    <EmptyState v-else-if="!loading && !files.length"
+      icon="folder_open"
+      title="Sin archivos"
+      subtitle="Arrastra documentos aquí o usa el botón Subir para adjuntarlos al proyecto" />
 
     <q-list v-else style="border:1px solid var(--ds-border); border-radius:var(--ds-radius); overflow:hidden">
       <q-item v-for="(file, i) in files" :key="file.id" class="q-py-sm"
@@ -93,6 +91,8 @@ import { useQuasar } from 'quasar'
 import { useFilesStore } from 'src/stores/files'
 import { storeToRefs } from 'pinia'
 import { decodeId } from 'src/utils/routeId'
+import SkeletonList from 'src/components/SkeletonList.vue'
+import EmptyState from 'src/components/EmptyState.vue'
 
 const $q    = useQuasar()
 const route = useRoute()

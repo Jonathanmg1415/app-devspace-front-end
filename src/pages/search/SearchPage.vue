@@ -52,6 +52,8 @@
           <q-btn v-if="item._type === 'link'" flat round dense size="xs"
             icon="open_in_new" style="color:var(--ds-text-3)"
             :href="item.url" target="_blank" @click.stop />
+          <q-icon v-if="item._type !== 'link'" name="chevron_right"
+            size="16px" style="color:var(--ds-text-3); opacity:0.5" />
         </div>
       </div>
     </div>
@@ -66,10 +68,13 @@
 <script setup>
 import { ref } from 'vue'
 import { useQuasar } from 'quasar'
+import { useRouter } from 'vue-router'
 import { useSearchStore } from 'src/stores/search'
 import { storeToRefs } from 'pinia'
+import { encodeId } from 'src/utils/routeId'
 
 const $q = useQuasar()
+const router = useRouter()
 const store = useSearchStore()
 const { results, loading } = storeToRefs(store)
 
@@ -86,13 +91,29 @@ const typeIcon  = t => ({ task:'task_alt', link:'link', command:'terminal', note
 const typeColor = t => ({ task:'#22C55E', link:'#38BDF8', command:'#F97316', note:'#A78BFA', card:'#F472B6' }[t] || '#6B7280')
 const typeLabel = t => ({ task:'Tarea', link:'Link', command:'Comando', note:'Nota', card:'Card' }[t] || t)
 
+const typeRoute = {
+  task:    (pid) => `/projects/${encodeId(pid)}/tasks`,
+  note:    (pid) => `/projects/${encodeId(pid)}/notes`,
+  command: (pid) => `/projects/${encodeId(pid)}/commands`,
+  link:    (pid) => `/projects/${encodeId(pid)}/links`,
+  card:    (pid) => `/projects/${encodeId(pid)}/tasks`,
+}
+
 function copyCmd(text) {
   navigator.clipboard.writeText(text)
   $q.notify({ message: 'Copiado', timeout: 800, color: 'grey-9', textColor: 'white', position: 'bottom' })
 }
 
 function handleResultClick(item) {
-  if (item._type === 'link') window.open(item.url, '_blank')
+  if (item._type === 'link') {
+    window.open(item.url, '_blank')
+    return
+  }
+  const route = typeRoute[item._type]
+  if (route && item.project) {
+    router.push(route(item.project))
+    return
+  }
   if (item._type === 'command') copyCmd(item.command)
 }
 </script>

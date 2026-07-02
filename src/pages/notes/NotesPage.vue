@@ -10,9 +10,12 @@
       <q-btn color="primary" icon="add" label="Nueva nota" size="sm" style="height:34px" @click="openNew" />
     </div>
 
+    <!-- Skeleton carga -->
+    <SkeletonList v-if="loading && !items.length" variant="grid" :count="6" />
+
     <!-- Notas -->
-    <div class="notes-grid">
-      <div v-for="note in items" :key="note.id" class="note-card">
+    <div v-else class="notes-grid">
+      <div v-for="note in items" :key="note.id" class="note-card" style="cursor:pointer" @click="openView(note)">
         <div class="note-card-header">
           <div class="note-card-title">{{ note.title }}</div>
           <q-btn flat round dense size="xs" icon="more_vert"
@@ -68,13 +71,10 @@
       </q-card>
     </q-dialog>
 
-    <SkeletonList v-if="loading" :count="6" />
-
-    <div v-else-if="!items.length" class="flex flex-center column q-py-xl" style="color:var(--ds-text-3)">
-      <q-icon name="description" size="48px" style="opacity:0.25" />
-      <p style="font-size:14px; margin-top:12px; font-weight:500">Sin notas aún</p>
-      <p style="font-size:12px; margin-top:4px">Crea tu primera nota técnica con el botón de arriba</p>
-    </div>
+    <EmptyState v-if="!loading && !items.length"
+      icon="description"
+      title="Sin notas aún"
+      subtitle="Documenta decisiones técnicas, ideas o cualquier referencia importante del proyecto" />
 
     <div v-if="hasMore && !loading" class="flex flex-center q-mt-md">
       <q-btn flat size="sm" label="Cargar más" icon="expand_more"
@@ -151,7 +151,9 @@
 
         <q-card-actions align="right" style="padding:0 24px 20px; gap:8px">
           <q-btn flat label="Cancelar" size="sm" v-close-popup @click="resetForm" style="color:var(--ds-text-2)" />
-          <q-btn color="primary" :label="editing ? 'Guardar' : 'Crear'" size="sm" :loading="saving" style="min-width:72px; height:34px" @click="handleSubmit" />
+          <q-btn color="primary" :label="editing ? 'Guardar' : 'Crear'" size="sm" :loading="saving" style="min-width:72px; height:34px" @click="handleSubmit">
+            <template #loading><DsSpinner size="sm" /></template>
+          </q-btn>
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -167,6 +169,7 @@ import { useNotesStore } from 'src/stores/notes'
 import { storeToRefs } from 'pinia'
 import NoteContent from 'src/components/NoteContent.vue'
 import SkeletonList from 'src/components/SkeletonList.vue'
+import EmptyState from 'src/components/EmptyState.vue'
 import { decodeId } from 'src/utils/routeId'
 import { api } from 'src/boot/axios'
 

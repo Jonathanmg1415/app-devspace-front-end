@@ -10,7 +10,18 @@
       />
     </div>
 
-    <div class="row q-gutter-md">
+    <!-- Loading -->
+    <div v-if="loading && !items.length" class="cards-loading">
+      <DsSpinner size="lg" />
+    </div>
+
+    <!-- Empty -->
+    <div v-else-if="!items.length" class="cards-empty">
+      <q-icon name="grid_view" size="36px" style="color:var(--ds-text-3)" />
+      <div style="font-size:13px; color:var(--ds-text-3); margin-top:8px">Sin tarjetas aún. Crea la primera.</div>
+    </div>
+
+    <div v-else class="row q-gutter-md">
       <div
         v-for="card in items"
         :key="card.id"
@@ -156,7 +167,7 @@ const { t } = useI18n();
 const $q = useQuasar();
 const route = useRoute();
 const store = useCardsStore();
-const { items } = storeToRefs(store);
+const { items, loading } = storeToRefs(store);
 const projectId = computed(() => decodeId(route.params.id));
 const openForm = ref(false);
 const saving = ref(false);
@@ -204,3 +215,15 @@ function confirmDelete(c) {
   }).onOk(() => store.remove(c.id));
 }
 </script>
+
+<style scoped>
+.cards-loading,
+.cards-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 0;
+  gap: 6px;
+}
+</style>

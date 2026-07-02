@@ -4,7 +4,7 @@ import { api } from 'src/boot/axios'
 
 export const useFilesStore = defineStore('files', () => {
   const files     = ref([])
-  const loading   = ref(false)
+  const loading   = ref(true)
   const uploading = ref(false)
 
   async function fetchAll(projectId) {
