@@ -138,12 +138,22 @@
               <span v-if="taskTags(task).length > 3" class="task-tag task-tag--more">+{{ taskTags(task).length - 3 }}</span>
             </div>
 
-            <!-- Checklist progress -->
-            <div v-if="checklistTotal(task) > 0" class="checklist-progress q-mb-xs">
-              <div class="checklist-bar">
-                <div class="checklist-bar-fill" :style="{ width: checklistPct(task) + '%' }" />
+            <!-- Checklist items + progress -->
+            <div v-if="checklistTotal(task) > 0" class="task-checklist q-mb-xs">
+              <div v-for="(item, idx) in checklistItems(task)" :key="idx"
+                class="task-checklist-item"
+                @click.stop="toggleChecklistItem(task, idx)">
+                <div class="task-check-box" :class="{ done: item.done }">
+                  <q-icon v-if="item.done" name="check" size="9px" />
+                </div>
+                <span class="task-check-label" :class="{ done: item.done }">{{ item.text }}</span>
               </div>
-              <span class="checklist-count">{{ checklistDone(task) }}/{{ checklistTotal(task) }}</span>
+              <div class="checklist-progress" style="margin-top:5px">
+                <div class="checklist-bar">
+                  <div class="checklist-bar-fill" :style="{ width: checklistPct(task) + '%' }" />
+                </div>
+                <span class="checklist-count">{{ checklistDone(task) }}/{{ checklistTotal(task) }}</span>
+              </div>
             </div>
 
             <!-- Footer -->
@@ -509,6 +519,14 @@ const checklistTotal = (task) => checklistItems(task).length
 const checklistDone  = (task) => checklistItems(task).filter(i => i.done).length
 const checklistPct   = (task) => checklistTotal(task) > 0 ? Math.round((checklistDone(task) / checklistTotal(task)) * 100) : 0
 
+async function toggleChecklistItem(task, idx) {
+  const updated = checklistItems(task).map((item, i) =>
+    i === idx ? { ...item, done: !item.done } : { ...item }
+  )
+  task.checklist = updated
+  await store.update(task.id, { checklist: updated })
+}
+
 function addChecklistItem() {
   const text = newChecklistItem.value.trim()
   if (!text) return
@@ -735,6 +753,25 @@ function formatTs(ts) {
   border: 1px solid rgba(167,139,250,0.2);
 }
 .task-tag--more { background: var(--ds-bg-2); color: var(--ds-text-3); border-color: var(--ds-border); }
+
+/* ── Checklist en tarjeta ── */
+.task-checklist { display: flex; flex-direction: column; gap: 3px; margin-bottom: 4px; }
+.task-checklist-item {
+  display: flex; align-items: center; gap: 6px;
+  cursor: pointer; padding: 2px 0; border-radius: 4px;
+  transition: background 100ms ease;
+}
+.task-checklist-item:hover { background: var(--ds-bg-hover); padding: 2px 4px; margin: 0 -4px; }
+.task-check-box {
+  width: 13px; height: 13px; border-radius: 3px; flex-shrink: 0;
+  border: 1.5px solid var(--ds-border-md);
+  display: flex; align-items: center; justify-content: center;
+  transition: background 150ms ease, border-color 150ms ease;
+  color: #fff;
+}
+.task-check-box.done { background: #22C55E; border-color: #22C55E; }
+.task-check-label { font-size: 11px; color: var(--ds-text-2); line-height: 1.3; user-select: none; }
+.task-check-label.done { text-decoration: line-through; color: var(--ds-text-3); }
 
 /* ── Checklist progress ── */
 .checklist-progress { display: flex; align-items: center; gap: 6px; }
