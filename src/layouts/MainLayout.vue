@@ -243,6 +243,8 @@ function handleNotifClick(n) {
     router.push(`/projects/${pid}`)
   } else if (n.type === 'calendar_shared') {
     router.push('/calendar')
+  } else if (n.type === 'announcement') {
+    router.push('/changelog')
   }
 }
 
