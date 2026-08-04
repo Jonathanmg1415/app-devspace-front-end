@@ -23,6 +23,10 @@
           @click="hideDone = !hideDone">
           <q-tooltip>{{ hideDone ? 'Mostrar completadas' : 'Ocultar completadas' }}</q-tooltip>
         </q-btn>
+        <q-btn flat icon="auto_awesome" :label="$q.screen.gt.xs ? 'Desde archivo' : ''"
+          size="sm" style="height:34px" @click="openExtract = true">
+          <q-tooltip v-if="!$q.screen.gt.xs">Crear tareas desde archivo</q-tooltip>
+        </q-btn>
         <q-btn color="primary" icon="add" :label="$q.screen.gt.xs ? 'Nueva tarea' : ''"
           size="sm" style="height:34px" @click="openForm = true" />
       </div>
@@ -178,6 +182,7 @@
                   <div style="width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;overflow:hidden;background:var(--ds-orange);color:#fff;font-size:11px;font-weight:700;flex-shrink:0">
                     <img v-if="typeof task.assignee === 'object' && task.assignee?.avatar"
                       :src="task.assignee.avatar"
+                      :alt="task.assignee?.name || 'Avatar'"
                       style="width:100%;height:100%;object-fit:cover;border-radius:50%" />
                     <span v-else>{{ assigneeInitial(task.assignee) }}</span>
                   </div>
@@ -238,6 +243,7 @@
                   <div style="width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;overflow:hidden;background:var(--ds-orange);color:#fff;font-size:11px;font-weight:700;flex-shrink:0">
                     <img v-if="typeof task.assignee === 'object' && task.assignee?.avatar"
                       :src="task.assignee.avatar"
+                      :alt="task.assignee?.name || 'Avatar'"
                       style="width:100%;height:100%;object-fit:cover;border-radius:50%" />
                     <span v-else>{{ assigneeInitial(task.assignee) }}</span>
                   </div>
@@ -396,6 +402,12 @@
     </q-dialog>
 
     <!-- Dialog asignar -->
+    <ExtractTasksDialog
+      v-model="openExtract"
+      :project-id="projectId"
+      @created="store.fetchAll(projectId)"
+    />
+
     <q-dialog v-model="assignDialog" persistent>
       <q-card style="width:min(320px,96vw)">
         <q-card-section style="padding:24px 24px 0">
@@ -422,6 +434,7 @@ import { ref, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { useQuasar } from 'quasar'
 import DsSpinner from 'src/components/DsSpinner.vue'
+import ExtractTasksDialog from 'src/components/ExtractTasksDialog.vue'
 import { useTasksStore } from 'src/stores/tasks'
 import SkeletonList from 'src/components/SkeletonList.vue'
 import { useMembersStore } from 'src/stores/members'
@@ -439,6 +452,7 @@ const { members } = storeToRefs(membersStore)
 const projectId = computed(() => decodeId(route.params.id))
 const viewMode = ref('kanban')
 const openForm = ref(false); const saving = ref(false); const editingTask = ref(null)
+const openExtract = ref(false)
 const assignDialog = ref(false); const assignTask = ref(null); const assigneeId = ref(null)
 
 const blankForm = () => ({

@@ -11,7 +11,6 @@ export const useProjectsStore = defineStore('projects', () => {
   loading.value = true
   try {
     const { data } = await api.get('/api/projects')
-    console.log('proyectos del back:', data.projects)
     projects.value = data.projects ?? []
   } finally { loading.value = false }
 }

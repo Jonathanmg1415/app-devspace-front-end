@@ -247,6 +247,7 @@ const nav = computed(() => {
     { label:'Comandos',  desc:'Snippets CLI',             icon:'terminal',    color:'#F97316', to:`/projects/${id}/commands` },
     { label:'Links',     desc:'URLs del proyecto',        icon:'link',        color:'#38BDF8', to:`/projects/${id}/links` },
     { label:'Notas',     desc:'Documentación técnica',    icon:'description', color:'#A78BFA', to:`/projects/${id}/notes` },
+    { label:'Cards',     desc:'Tablero de tarjetas',      icon:'grid_view',   color:'#EC4899', to:`/projects/${id}/cards` },
     { label:'Archivos',  desc:'PDFs y documentos',        icon:'attach_file', color:'#FBBF24', to:`/projects/${id}/files` },
     { label:'Actividad', desc:'Historial del equipo',     icon:'timeline',    color:'#34D399', to:`/projects/${id}/activity` },
   ]
@@ -281,7 +282,7 @@ async function loadSummary() {
     const { data } = await api.get('/api/projects/summary', { params: { projectId: projectId.value } })
     summary.value = data
   } catch {
-    // silent — el skeleton desaparece igual
+    $q.notify({ type: 'negative', message: 'No se pudo cargar el resumen del proyecto' })
   } finally {
     loadingSummary.value = false
   }

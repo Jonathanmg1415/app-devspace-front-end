@@ -3,13 +3,13 @@
 
     <q-header>
       <q-toolbar style="padding: 0 8px; min-height: 48px">
-        <q-btn flat round dense icon="menu" size="sm"
+        <q-btn flat round icon="menu" size="sm" aria-label="Abrir menú"
           style="color:var(--ds-text-2); margin-right:2px"
           @click="drawer = !drawer" />
 <q-toolbar-title style="flex:0 0 auto; padding-right:8px">
           <div class="ds-logo-wrap">
             <div class="ds-logo-icon">
-              <img src="/favicon.png" style="height:20px; width:20px; border-radius:50%; display:block" />
+              <img src="/favicon.png" alt="" style="height:20px; width:20px; border-radius:50%; display:block" />
             </div>
             <span class="ds-logo-text">Dev<span style="color:var(--ds-orange)">Space</span></span>
           </div>
@@ -18,7 +18,7 @@
         <q-space />
 
         <!-- Search — solo ícono en móvil -->
-        <q-btn flat round dense size="sm" icon="search"
+        <q-btn flat round size="sm" icon="search" aria-label="Buscar"
           style="color:var(--ds-text-2)"
           @click="router.push('/search')" class="lt-sm" />
 
@@ -31,9 +31,10 @@
         </q-btn>
 
         <!-- Notificaciones -->
-        <q-btn flat round dense size="sm" style="color:var(--ds-text-2); position:relative">
+        <q-btn flat round size="sm" style="color:var(--ds-text-2); position:relative"
+          :aria-label="notifStore.unread > 0 ? `Notificaciones (${notifStore.unread} sin leer)` : 'Notificaciones'">
           <q-icon name="notifications" size="18px" />
-          <span v-if="notifStore.unread > 0" class="notif-badge">{{ notifStore.unread > 9 ? '9+' : notifStore.unread }}</span>
+          <span v-if="notifStore.unread > 0" class="notif-badge" aria-hidden="true">{{ notifStore.unread > 9 ? '9+' : notifStore.unread }}</span>
           <q-menu style="width:320px; max-height:440px" anchor="bottom right" self="top right">
             <div class="notif-header">
               <span style="font-size:13px; font-weight:600; color:var(--ds-text-1)">Notificaciones</span>
@@ -61,7 +62,7 @@
         </q-btn>
 
         <!-- Theme picker -->
-        <q-btn flat round dense size="sm" style="color:var(--ds-text-2)">
+        <q-btn flat round size="sm" style="color:var(--ds-text-2)" aria-label="Color de acento">
           <q-icon name="palette" size="16px" />
           <q-tooltip>Color de acento</q-tooltip>
           <q-menu style="min-width:216px" anchor="bottom right" self="top right">
@@ -84,7 +85,7 @@
         </q-btn>
 
         <!-- Dark mode -->
-        <q-btn flat round dense size="sm" style="color:var(--ds-text-2)">
+        <q-btn flat round size="sm" style="color:var(--ds-text-2)" aria-label="Cambiar modo claro/oscuro">
           <q-icon :name="$q.dark.isActive ? 'light_mode' : 'dark_mode'" size="16px" />
           <q-menu>
             <q-list style="min-width:140px; padding:4px">
@@ -105,9 +106,9 @@
         </q-btn>
 
         <!-- User -->
-        <q-btn flat round dense style="color:var(--ds-text-2); margin-left:4px; padding:2px">
+        <q-btn flat round style="color:var(--ds-text-2); margin-left:4px; padding:2px" :aria-label="`Cuenta de ${auth.user?.name || 'usuario'}`">
           <q-avatar size="34px" :style="auth.user?.avatar ? {} : { background:'var(--ds-orange)', color:'#fff', fontSize:'14px', fontWeight:'700' }">
-            <img v-if="auth.user?.avatar" :src="auth.user.avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%" />
+            <img v-if="auth.user?.avatar" :src="auth.user.avatar" :alt="auth.user?.name || 'Avatar'" style="width:100%;height:100%;object-fit:cover;border-radius:50%" />
             <span v-else>{{ userInitial }}</span>
           </q-avatar>
           <q-menu>
@@ -219,17 +220,18 @@ function playNotifSound() {
   } catch { /* navegador bloqueó audio sin interacción previa */ }
 }
 
-onMounted(async () => {
-  if (auth.token && !auth.user) await auth.fetchMe()
+onMounted(() => {
   const saved = localStorage.getItem('devspace_dark')
   if (saved !== null) $q.dark.set(JSON.parse(saved))
-  notifStore.fetchAll()
-  // refresca notificaciones cada 30 segundos y suena si hay nuevas
-  setInterval(async () => {
-    const prevUnread = notifStore.unread
-    await notifStore.fetchAll()
-    if (notifStore.unread > prevUnread) playNotifSound()
-  }, 30 * 1000)
+  if (auth.token) {
+    notifStore.fetchAll()
+    setInterval(async () => {
+      if (!auth.token) return
+      const prevUnread = notifStore.unread
+      await notifStore.fetchAll()
+      if (notifStore.unread > prevUnread) playNotifSound()
+    }, 30 * 1000)
+  }
 })
 
 function handleNotifClick(n) {

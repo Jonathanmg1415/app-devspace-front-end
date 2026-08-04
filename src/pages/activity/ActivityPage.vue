@@ -7,7 +7,7 @@
           Historial reciente del proyecto
         </div>
       </div>
-      <q-btn flat round dense icon="refresh" size="sm" style="color:var(--ds-text-2)"
+      <q-btn flat round icon="refresh" size="sm" style="color:var(--ds-text-2)" aria-label="Actualizar actividad"
         :loading="loading" @click="load">
         <q-tooltip>Actualizar</q-tooltip>
       </q-btn>
@@ -47,12 +47,14 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
+import { useQuasar } from 'quasar'
 import { api } from 'src/boot/axios'
 import { decodeId } from 'src/utils/routeId'
 import SkeletonList from 'src/components/SkeletonList.vue'
 import EmptyState from 'src/components/EmptyState.vue'
 
 const route = useRoute()
+const $q = useQuasar()
 const projectId = computed(() => decodeId(route.params.id))
 const events  = ref([])
 const loading = ref(false)
@@ -64,6 +66,8 @@ async function load() {
   try {
     const { data } = await api.get('/api/activity', { params: { projectId: projectId.value } })
     events.value = data.events ?? []
+  } catch {
+    $q.notify({ type: 'negative', message: 'No se pudo cargar la actividad del proyecto' })
   } finally { loading.value = false }
 }
 

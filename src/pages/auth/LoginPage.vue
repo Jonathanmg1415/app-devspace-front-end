@@ -2,7 +2,7 @@
   <q-card class="auth-card" style="width:min(380px, 96vw)">
     <q-card-section class="q-pa-lg q-pa-sm-xl">
       <div class="q-mb-md flex flex-center">
-        <img src="/favicon.png" style="height:44px; width:44px; border-radius:50%" />
+        <img src="/favicon.png" alt="DevSpace" style="height:44px; width:44px; border-radius:50%" />
       </div>
       <div style="font-size:20px; font-weight:700; text-align:center; margin-bottom:4px; color:var(--ds-text-1)">
         Dev<span style="color:var(--ds-orange)">Space</span>
@@ -21,7 +21,10 @@
           <template #prepend><q-icon name="lock_outline" size="16px" style="color:var(--ds-text-3)" /></template>
           <template #append>
             <q-icon :name="showPwd ? 'visibility_off' : 'visibility'" size="16px"
-              class="cursor-pointer" style="color:var(--ds-text-3)" @click="showPwd = !showPwd" />
+              class="cursor-pointer" style="color:var(--ds-text-3)"
+              tabindex="0" role="button" :aria-label="showPwd ? 'Ocultar contraseña' : 'Mostrar contraseña'"
+              @click="showPwd = !showPwd"
+              @keydown.enter="showPwd = !showPwd" @keydown.space.prevent="showPwd = !showPwd" />
           </template>
         </q-input>
         <q-btn type="submit" label="Iniciar sesión" color="primary" class="full-width q-mt-sm"

@@ -58,5 +58,15 @@ export const useTasksStore = defineStore('tasks', () => {
     total.value--
   }
 
-  return { items, loading, loadingMore, hasMore, total, fetchAll, loadMore, create, update, remove }
+  async function extractFromFile(file, projectId) {
+    const formData = new FormData()
+    formData.append('file', file)
+    const { data } = await api.post('/api/tasks/extract', formData, {
+      params: { projectId },
+      headers: { 'Content-Type': 'multipart/form-data' },
+    })
+    return data.tasks ?? []
+  }
+
+  return { items, loading, loadingMore, hasMore, total, fetchAll, loadMore, create, update, remove, extractFromFile }
 })

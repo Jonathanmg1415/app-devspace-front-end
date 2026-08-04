@@ -47,8 +47,9 @@
           <div v-for="task in group.tasks" :key="task.id" class="task-row">
             <!-- Status toggle -->
             <button class="status-btn" :class="`status-btn--${task.status}`"
+              :aria-label="nextStatusLabel(task.status)"
               @click="cycleStatus(task)">
-              <q-icon :name="statusIcon(task.status)" size="13px" />
+              <q-icon :name="statusIcon(task.status)" size="15px" />
             </button>
 
             <!-- Contenido -->
@@ -143,6 +144,11 @@ function statusIcon(s) {
   return { todo: 'radio_button_unchecked', in_progress: 'timelapse', done: 'check_circle' }[s] || 'radio_button_unchecked'
 }
 
+const STATUS_LABEL = { todo: 'Pendiente', in_progress: 'En progreso', done: 'Hecha' }
+function nextStatusLabel(s) {
+  return `Marcar como ${STATUS_LABEL[STATUS_CYCLE[s]].toLowerCase()}`
+}
+
 function priorityColor(p) {
   return { low: '#64748B', medium: '#F97316', high: '#EF4444' }[p] || '#64748B'
 }
@@ -232,7 +238,7 @@ function dueDateClass(task) {
 
 /* Status button */
 .status-btn {
-  width: 22px; height: 22px;
+  width: 36px; height: 36px;
   border-radius: 50%;
   border: none;
   cursor: pointer;

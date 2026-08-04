@@ -10,8 +10,9 @@
     <!-- ── Hero avatar ── -->
     <div class="profile-hero q-mb-md">
       <!-- Avatar clickeable -->
-      <div class="avatar-wrap" @click="triggerFilePick">
-        <img v-if="avatarPreview" :src="avatarPreview" class="avatar-img" />
+      <div class="avatar-wrap" role="button" tabindex="0" aria-label="Cambiar foto de perfil"
+        @click="triggerFilePick" @keydown.enter="triggerFilePick" @keydown.space.prevent="triggerFilePick">
+        <img v-if="avatarPreview" :src="avatarPreview" :alt="auth.user?.name || 'Avatar'" class="avatar-img" />
         <div v-else class="avatar-initial" :style="{ background:'var(--ds-orange)' }">
           {{ auth.user?.name?.[0]?.toUpperCase() || '?' }}
         </div>
@@ -66,7 +67,10 @@
           :type="showCurrent ? 'text' : 'password'" outlined dense>
           <template #append>
             <q-icon :name="showCurrent ? 'visibility_off' : 'visibility'" size="16px"
-              class="cursor-pointer" style="color:var(--ds-text-3)" @click="showCurrent = !showCurrent" />
+              class="cursor-pointer" style="color:var(--ds-text-3)"
+              tabindex="0" role="button" :aria-label="showCurrent ? 'Ocultar contraseña' : 'Mostrar contraseña'"
+              @click="showCurrent = !showCurrent"
+              @keydown.enter="showCurrent = !showCurrent" @keydown.space.prevent="showCurrent = !showCurrent" />
           </template>
         </q-input>
         <q-input v-model="pwdForm.next" label="Nueva contraseña"
@@ -74,7 +78,10 @@
           :rules="[v => !v || v.length >= 6 || 'Mínimo 6 caracteres']">
           <template #append>
             <q-icon :name="showNext ? 'visibility_off' : 'visibility'" size="16px"
-              class="cursor-pointer" style="color:var(--ds-text-3)" @click="showNext = !showNext" />
+              class="cursor-pointer" style="color:var(--ds-text-3)"
+              tabindex="0" role="button" :aria-label="showNext ? 'Ocultar contraseña' : 'Mostrar contraseña'"
+              @click="showNext = !showNext"
+              @keydown.enter="showNext = !showNext" @keydown.space.prevent="showNext = !showNext" />
           </template>
         </q-input>
         <q-input v-model="pwdForm.confirm" label="Confirmar nueva contraseña"

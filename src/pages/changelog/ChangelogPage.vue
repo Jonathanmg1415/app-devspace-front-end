@@ -58,6 +58,21 @@ const badgeLabel = t => ({ new: 'Nuevo', fix: 'Fix', improve: 'Mejora', breaking
 
 const releases = [
   {
+    version: 'v0.7.0',
+    type: 'alpha',
+    date: '4 Ago 2026',
+    title: 'Tareas desde archivo con IA y varias correcciones',
+    changes: [
+      { type: 'new',     text: 'Crear tareas automáticamente desde una imagen o un documento .docx: la IA propone tareas y las revisás/editás antes de crearlas.' },
+      { type: 'new',     text: 'Sección de Cards ahora accesible desde el dashboard del proyecto.' },
+      { type: 'fix',     text: 'La generación de documentos con IA y el envío de emails de invitación estaban rotos por un conflicto interno de Node — corregido.' },
+      { type: 'fix',     text: 'El feed de actividad del proyecto no registraba absolutamente nada; ahora sí queda historial de tareas, notas, comentarios e invitaciones.' },
+      { type: 'fix',     text: 'Ya podés borrar tus propios comentarios en una tarea (antes devolvía error).' },
+      { type: 'fix',     text: 'Borrar un proyecto ya no deja archivos huérfanos en el almacenamiento.' },
+      { type: 'improve', text: 'Mejoras de accesibilidad: navegación por teclado en el cambio de contraseña y de foto de perfil, textos alternativos en imágenes, botones más fáciles de tocar en mobile.' },
+    ],
+  },
+  {
     version: 'v0.6.0',
     type: 'alpha',
     date: '1 Jul 2026',

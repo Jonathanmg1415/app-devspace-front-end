@@ -21,7 +21,7 @@
               color: '#fff', fontSize: '13px', fontWeight: '700',
               marginLeft: m !== store.members[0] ? '-10px' : '0'
             }">
-            <img v-if="m.user?.avatar" :src="m.user.avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%" />
+            <img v-if="m.user?.avatar" :src="m.user.avatar" :alt="m.user?.name || 'Avatar'" style="width:100%;height:100%;object-fit:cover;border-radius:50%" />
             <span v-else>{{ m.user?.name?.[0]?.toUpperCase() || '?' }}</span>
           </div>
         </div>
@@ -92,7 +92,7 @@
               class="cal-event-avatar"
               :style="{ background: ev.owner?.avatar ? 'transparent' : nameToColor(ev.owner?.name) }"
               :title="ev.owner?.name">
-              <img v-if="ev.owner?.avatar" :src="ev.owner.avatar"
+              <img v-if="ev.owner?.avatar" :src="ev.owner.avatar" :alt="ev.owner?.name || 'Avatar'"
                 style="width:100%;height:100%;object-fit:cover;border-radius:50%;display:block" />
               <span v-else style="color:#fff;font-size:8px;font-weight:700">{{ ev.owner?.name?.[0]?.toUpperCase() || '?' }}</span>
             </span>
@@ -243,7 +243,7 @@
           </div>
           <div v-for="m in store.members" :key="m.id" class="member-row">
             <q-avatar size="30px" :style="{ background: m.user?.avatar ? 'transparent' : nameToColor(m.user?.name), color:'#fff', fontSize:'12px', fontWeight:'700' }">
-              <img v-if="m.user?.avatar" :src="m.user.avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%" />
+              <img v-if="m.user?.avatar" :src="m.user.avatar" :alt="m.user?.name || 'Avatar'" style="width:100%;height:100%;object-fit:cover;border-radius:50%" />
               <span v-else>{{ m.user?.name?.[0]?.toUpperCase() || '?' }}</span>
             </q-avatar>
             <div class="col" style="min-width:0">

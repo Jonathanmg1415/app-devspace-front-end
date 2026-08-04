@@ -25,6 +25,7 @@ const routes = [
       { path: 'projects/:id/links',       component: () => import('src/pages/links/LinksPage.vue') },
       { path: 'projects/:id/commands',    component: () => import('src/pages/commands/CommandsPage.vue') },
       { path: 'projects/:id/notes',       component: () => import('src/pages/notes/NotesPage.vue') },
+      { path: 'projects/:id/cards',       component: () => import('src/pages/cards/CardsPage.vue') },
       { path: 'projects/:id/files',       component: () => import('src/pages/files/FilesPage.vue') },
       { path: 'projects/:id/activity',   component: () => import('src/pages/activity/ActivityPage.vue') },
       { path: 'my-tasks',                  component: () => import('src/pages/tasks/MyTasksPage.vue') },
