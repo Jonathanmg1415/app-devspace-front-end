@@ -172,6 +172,7 @@ import { useRoute } from "vue-router";
 import { useQuasar } from "quasar";
 import DsSpinner from 'src/components/DsSpinner.vue'
 import { useCommandsStore } from "src/stores/commands";
+import { api } from "src/boot/axios";
 import SkeletonList from "src/components/SkeletonList.vue";
 import EmptyState from "src/components/EmptyState.vue";
 import { storeToRefs } from "pinia";
@@ -211,33 +212,9 @@ async function generateDescription() {
   if (!form.value.command) return;
   generatingDesc.value = true;
   try {
-    const response = await fetch(
-      "https://api.groq.com/openai/v1/chat/completions",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${import.meta.env.VITE_GROQ_API_KEY}`,
-        },
-        body: JSON.stringify({
-          model: "qwen/qwen3.6-27b",
-          reasoning_effort: "none",
-          max_tokens: 120,
-          messages: [
-            {
-              role: "system",
-              content:
-                "Eres un asistente técnico. Describe en español, en máximo 2 oraciones concisas, qué hace el siguiente comando de terminal. Sin formato markdown, solo texto plano.",
-            },
-            { role: "user", content: form.value.command },
-          ],
-        }),
-      }
-    );
-    const data = await response.json();
-    const desc = data.choices?.[0]?.message?.content?.trim();
-    if (desc) {
-      form.value.description = desc;
+    const { data } = await api.post("/api/ai/describe-command", { command: form.value.command });
+    if (data.description) {
+      form.value.description = data.description;
     } else {
       $q.notify({ type: "warning", message: "No se pudo generar la descripción" });
     }

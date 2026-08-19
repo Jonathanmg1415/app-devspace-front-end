@@ -23,6 +23,9 @@ App Quasar CLI (Vite), estado con Pinia, Vue Router 4. Deploy en Vercel.
 ## Todas las llamadas API llevan prefijo `/api`
 La instancia axios usa `baseURL` = solo el host (`VITE_API_BASE_URL`); cada llamada agrega `/api/...` a mano (ej. `api.get('/api/projects')`). Esto coincide con el prefijo global `/api` que el backend aplica a todas sus rutas (ver `app-devspace-back-end/CLAUDE.md`) — confirmado correcto, no es un bug.
 
+## IA
+No hay llamadas directas a Groq desde el frontend — todo pasa por el backend (`/api/ai/generate`, `/api/ai/describe-command`, `/api/tasks/extract`). Antes `CommandsPage.vue` llamaba a Groq directo con `VITE_GROQ_API_KEY` expuesta en el bundle; se movió al backend, esa env var ya no existe.
+
 ## Keep-alive
 `boot/axios.js` pinguea `/api/health` cada 10 min para evitar que Render duerma el backend en el free tier. Ruta confirmada correcta.
 
