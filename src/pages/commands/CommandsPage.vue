@@ -220,7 +220,8 @@ async function generateDescription() {
           Authorization: `Bearer ${import.meta.env.VITE_GROQ_API_KEY}`,
         },
         body: JSON.stringify({
-          model: "llama-3.1-8b-instant",
+          model: "qwen/qwen3.6-27b",
+          reasoning_effort: "none",
           max_tokens: 120,
           messages: [
             {
