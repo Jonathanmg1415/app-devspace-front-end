@@ -88,6 +88,14 @@ body.body--light {
 // ── Base ─────────────────────────────────────────────────────
 *, *::before, *::after { box-sizing: border-box; }
 
+// Quasar SIEMPRE monta su propia app (boot files + router) en #q-app — es
+// obligatorio, no se puede desactivar desde config. El proyecto usa un main.js
+// manual que crea una segunda app completa en #app (con el auth guard real).
+// Las dos quedan visibles y renderizando la misma página — de ahí la "página
+// duplicada". Se oculta #q-app hasta migrar main.js a los boot files de Quasar
+// y eliminar la app duplicada de raíz.
+#q-app { display: none !important; }
+
 // Ojo: overflow-y no va explícito en los dos (html Y body) — eso crea dos cajas
 // de scroll anidadas ("doble scrollbar"/página duplicada) en vez de una sola.
 // Se deja overflow-y en su default (visible) para que el scroll lo maneje el
