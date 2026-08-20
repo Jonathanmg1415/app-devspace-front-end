@@ -12,6 +12,11 @@ const api = axios.create({
 const SKIP_URLS = ['/notifications', '/health', '/auth/me']
 let _activeLoads = 0
 
+// Evita que un cold-start de Render (o cualquier caída) dispare un toast de
+// "sin conexión" por cada request en paralelo que falla — se agrupa en uno solo.
+let _lastConnErrorAt = 0
+const CONN_ERROR_COOLDOWN = 4000
+
 function shouldTrack(config) {
   if (!config) return false
   if ((config.method || '').toLowerCase() !== 'get') return false
@@ -66,13 +71,17 @@ export default boot(({ app }) => {
       }
 
       if (!err.response) {
-        Notify.create({
-          type: 'negative',
-          message: 'Sin conexión al servidor',
-          caption: 'Verifica tu conexión e intenta de nuevo',
-          icon: 'cloud_off',
-          timeout: 5000,
-        })
+        const now = Date.now()
+        if (now - _lastConnErrorAt > CONN_ERROR_COOLDOWN) {
+          _lastConnErrorAt = now
+          Notify.create({
+            type: 'negative',
+            message: 'Sin conexión al servidor',
+            caption: 'Si es la primera carga puede tardar unos segundos en despertar — intenta de nuevo',
+            icon: 'cloud_off',
+            timeout: 5000,
+          })
+        }
         return Promise.reject(err)
       }
 
