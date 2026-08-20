@@ -88,7 +88,11 @@ body.body--light {
 // ── Base ─────────────────────────────────────────────────────
 *, *::before, *::after { box-sizing: border-box; }
 
-html, body { height: 100%; overflow-y: auto; overflow-x: hidden; }
+// Ojo: overflow-y no va explícito en los dos (html Y body) — eso crea dos cajas
+// de scroll anidadas ("doble scrollbar"/página duplicada) en vez de una sola.
+// Se deja overflow-y en su default (visible) para que el scroll lo maneje el
+// viewport normalmente, y solo se restringe el horizontal.
+html, body { height: 100%; overflow-x: hidden; }
 #app { height: 100%; }
 
 body {
