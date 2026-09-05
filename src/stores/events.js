@@ -4,7 +4,6 @@ import { api } from 'src/boot/axios'
 
 export const useEventsStore = defineStore('events', () => {
   const events  = ref([])
-  const members = ref([])
   const loading = ref(false)
 
   async function fetchMonth(year, month) {
@@ -13,11 +12,6 @@ export const useEventsStore = defineStore('events', () => {
       const { data } = await api.get('/api/events', { params: { year, month } })
       events.value = data.events ?? []
     } finally { loading.value = false }
-  }
-
-  async function fetchMembers() {
-    const { data } = await api.get('/api/calendar/members')
-    members.value = data.members ?? []
   }
 
   async function create(payload) {
@@ -38,16 +32,5 @@ export const useEventsStore = defineStore('events', () => {
     events.value = events.value.filter(e => e.id !== id)
   }
 
-  async function invite(email) {
-    const { data } = await api.post('/api/calendar/invite', { email })
-    members.value.push(data.member)
-    return data.member
-  }
-
-  async function removeMember(id) {
-    await api.delete('/api/calendar/member', { data: { id } })
-    members.value = members.value.filter(m => m.id !== id)
-  }
-
-  return { events, members, loading, fetchMonth, fetchMembers, create, update, remove, invite, removeMember }
+  return { events, loading, fetchMonth, create, update, remove }
 })

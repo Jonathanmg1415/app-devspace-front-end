@@ -9,25 +9,40 @@
         </div>
       </div>
       <div class="row items-center" style="gap:6px">
-        <!-- Shared calendars indicator -->
-        <div v-if="store.members.length" class="row items-center" style="margin-right:6px">
-          <div v-for="m in store.members.slice(0,3)" :key="m.id"
-            :style="{
-              width: '34px', height: '34px', borderRadius: '50%',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              overflow: 'hidden', flexShrink: '0',
-              border: '2px solid var(--ds-bg-0)',
-              background: m.user?.avatar ? 'transparent' : nameToColor(m.user?.name),
-              color: '#fff', fontSize: '13px', fontWeight: '700',
-              marginLeft: m !== store.members[0] ? '-10px' : '0'
-            }">
-            <img v-if="m.user?.avatar" :src="m.user.avatar" :alt="m.user?.name || 'Avatar'" style="width:100%;height:100%;object-fit:cover;border-radius:50%" />
-            <span v-else>{{ m.user?.name?.[0]?.toUpperCase() || '?' }}</span>
-          </div>
-        </div>
-        <q-btn flat dense size="sm" icon="people" style="color:var(--ds-text-2); height:34px"
-          :label="$q.screen.gt.xs ? 'Compartir' : ''" @click="openShare">
-          <q-tooltip>Compartir calendario</q-tooltip>
+        <!-- Selector de calendarios visibles -->
+        <q-btn flat dense size="sm" icon="layers" style="color:var(--ds-text-2); height:34px"
+          :label="$q.screen.gt.xs ? 'Calendarios' : ''">
+          <q-tooltip>Elegir calendarios visibles</q-tooltip>
+          <q-menu>
+            <q-list style="min-width:220px; padding:6px">
+              <q-item v-for="cal in calendars" :key="cal.id" clickable v-ripple
+                style="border-radius:6px" @click="toggleCalendarVisibility(cal.id)">
+                <q-item-section avatar style="min-width:28px">
+                  <q-checkbox :model-value="!hiddenCalendarIds.has(cal.id)" dense color="primary" @click.stop="toggleCalendarVisibility(cal.id)" />
+                </q-item-section>
+                <q-item-section>
+                  <div class="row items-center" style="gap:6px">
+                    <span style="width:9px; height:9px; border-radius:2px; flex-shrink:0" :style="{ background: cal.color }" />
+                    <span style="font-size:13px">{{ cal.name }}</span>
+                  </div>
+                </q-item-section>
+                <q-item-section side v-if="cal.isOwner">
+                  <q-btn flat round dense size="xs" icon="people" style="color:var(--ds-text-3)" @click.stop="openShare(cal.id)">
+                    <q-tooltip>Compartir "{{ cal.name }}"</q-tooltip>
+                  </q-btn>
+                </q-item-section>
+              </q-item>
+              <q-separator style="margin:4px 0" />
+              <q-item clickable v-ripple style="border-radius:6px; color:var(--ds-orange)" @click="newCalendarDialog = true">
+                <q-item-section avatar style="min-width:28px"><q-icon name="add" size="15px" /></q-item-section>
+                <q-item-section style="font-size:13px">Nuevo calendario</q-item-section>
+              </q-item>
+            </q-list>
+          </q-menu>
+        </q-btn>
+        <q-btn flat dense size="sm" icon="check_box" style="color:var(--ds-text-2); height:34px"
+          :label="$q.screen.gt.xs ? 'Nueva tarea' : ''" @click="openNewDayTask()">
+          <q-tooltip>Nueva tarea de día</q-tooltip>
         </q-btn>
         <q-btn color="primary" icon="add" :label="$q.screen.gt.xs ? 'Nuevo evento' : ''"
           size="sm" style="height:34px" @click="openNew()" />
@@ -103,6 +118,19 @@
             +{{ day.extraCount }} más
           </div>
         </div>
+
+        <!-- Tareas del día -->
+        <div v-if="day.dayTasks.length || day.extraTasksCount > 0" class="cal-daytasks">
+          <div v-for="task in day.dayTasks" :key="task.id"
+            class="cal-daytask" :class="{ 'cal-daytask--done': task.done }"
+            @click.stop="handleToggleDayTask(task)">
+            <q-checkbox :model-value="task.done" dense size="xs" color="primary" @click.stop="handleToggleDayTask(task)" />
+            <span class="cal-daytask-title">{{ task.title }}</span>
+          </div>
+          <div v-if="day.extraTasksCount > 0" class="cal-extra" @click.stop="openDayView(day)">
+            +{{ day.extraTasksCount }} tarea{{ day.extraTasksCount !== 1 ? 's' : '' }}
+          </div>
+        </div>
       </div>
     </div>
 
@@ -146,6 +174,9 @@
             <q-input v-model="form.endDate" label="Fin (opcional)" outlined dense
               :type="form.allDay ? 'date' : 'datetime-local'" class="col" clearable />
           </div>
+
+          <q-select v-model="form.calendar" :options="calendarOptions" label="Calendario"
+            outlined dense emit-value map-options />
 
           <q-select v-model="form.project" :options="projectOptions" label="Proyecto (opcional)"
             outlined dense emit-value map-options clearable />
@@ -209,8 +240,23 @@
               </div>
             </div>
           </div>
-          <q-btn flat size="sm" label="Agregar evento" icon="add" class="q-mt-sm"
-            style="color:var(--ds-orange)" @click="dayViewDialog = false; openNew(dayViewDate)" />
+
+          <!-- Tareas del día -->
+          <div v-if="dayViewDayTasks.length" style="display:flex; flex-direction:column; gap:4px; margin-top:10px">
+            <div v-for="task in dayViewDayTasks" :key="task.id"
+              class="day-view-task" :class="{ 'day-view-task--done': task.done }">
+              <q-checkbox :model-value="task.done" dense color="primary" @update:model-value="handleToggleDayTask(task)" />
+              <span class="col" style="font-size:13px">{{ task.title }}</span>
+              <q-btn flat round dense size="xs" icon="close" style="color:var(--ds-text-3)" @click="confirmDeleteDayTask(task)" />
+            </div>
+          </div>
+
+          <div class="row q-gutter-sm q-mt-sm">
+            <q-btn flat size="sm" label="Agregar evento" icon="add"
+              style="color:var(--ds-orange)" @click="dayViewDialog = false; openNew(dayViewDate)" />
+            <q-btn flat size="sm" label="Agregar tarea" icon="check_box"
+              style="color:var(--ds-text-2)" @click="dayViewDialog = false; openNewDayTask(dayViewDate)" />
+          </div>
         </q-card-section>
       </q-card>
     </q-dialog>
@@ -224,8 +270,13 @@
             <q-btn flat round dense icon="close" size="sm" style="color:var(--ds-text-2)" v-close-popup />
           </div>
           <div style="font-size:12px; color:var(--ds-text-3); margin-top:4px">
-            Los usuarios invitados podrán ver tus eventos en su calendario.
+            Los invitados podrán ver, crear y editar eventos y tareas en este calendario.
           </div>
+        </q-card-section>
+        <q-card-section style="padding:16px 24px 0">
+          <q-select v-model="shareCalendarId" :options="ownedCalendars.map(c => ({ label: c.name, value: c.id }))"
+            label="Calendario" outlined dense emit-value map-options
+            @update:model-value="calendarsStore.fetchMembers(shareCalendarId)" />
         </q-card-section>
         <q-card-section style="padding:16px 24px">
           <div class="row q-gutter-sm">
@@ -237,11 +288,11 @@
         </q-card-section>
         <q-separator style="background:var(--ds-border)" />
         <q-card-section style="padding:12px 24px; max-height:240px; overflow-y:auto">
-          <div v-if="!store.members.length" class="flex flex-center column q-py-md" style="color:var(--ds-text-3)">
+          <div v-if="!calendarsStore.members.length" class="flex flex-center column q-py-md" style="color:var(--ds-text-3)">
             <q-icon name="people_outline" size="32px" style="opacity:0.3" />
             <p style="font-size:12px; margin-top:6px">Solo tú ves este calendario</p>
           </div>
-          <div v-for="m in store.members" :key="m.id" class="member-row">
+          <div v-for="m in calendarsStore.members" :key="m.id" class="member-row">
             <q-avatar size="30px" :style="{ background: m.user?.avatar ? 'transparent' : nameToColor(m.user?.name), color:'#fff', fontSize:'12px', fontWeight:'700' }">
               <img v-if="m.user?.avatar" :src="m.user.avatar" :alt="m.user?.name || 'Avatar'" style="width:100%;height:100%;object-fit:cover;border-radius:50%" />
               <span v-else>{{ m.user?.name?.[0]?.toUpperCase() || '?' }}</span>
@@ -261,6 +312,55 @@
         </q-card-actions>
       </q-card>
     </q-dialog>
+
+    <!-- ─── Dialog nuevo calendario ─── -->
+    <q-dialog v-model="newCalendarDialog" persistent>
+      <q-card style="width:min(360px,96vw)">
+        <q-card-section style="padding:24px 24px 0">
+          <div style="font-size:15px; font-weight:600; color:var(--ds-text-1)">Nuevo calendario</div>
+        </q-card-section>
+        <q-card-section class="row items-center" style="padding:16px 24px; gap:8px">
+          <div class="color-swatch" :style="{ background: newCalendarForm.color }">
+            <q-popup-proxy cover>
+              <div class="color-palette">
+                <div v-for="c in eventColors" :key="c"
+                  class="color-dot" :style="{ background: c }"
+                  :class="{ active: newCalendarForm.color === c }"
+                  @click="newCalendarForm.color = c" />
+              </div>
+            </q-popup-proxy>
+          </div>
+          <q-input v-model="newCalendarForm.name" label="Nombre" outlined dense class="col"
+            @keyup.enter="handleCreateCalendar" />
+        </q-card-section>
+        <q-card-actions align="right" style="padding:0 24px 20px">
+          <q-btn flat label="Cancelar" size="sm" v-close-popup style="color:var(--ds-text-2)" />
+          <q-btn color="primary" label="Crear" size="sm" :loading="creatingCalendar"
+            :disable="!newCalendarForm.name" @click="handleCreateCalendar" />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
+
+    <!-- ─── Dialog nueva tarea de día ─── -->
+    <q-dialog v-model="dayTaskDialog" persistent>
+      <q-card style="width:min(360px,96vw)">
+        <q-card-section style="padding:24px 24px 0">
+          <div style="font-size:15px; font-weight:600; color:var(--ds-text-1)">Nueva tarea de día</div>
+        </q-card-section>
+        <q-card-section style="padding:16px 24px" class="q-gutter-sm">
+          <q-input v-model="dayTaskForm.title" label="Título" outlined dense
+            @keyup.enter="handleCreateDayTask" />
+          <q-input v-model="dayTaskForm.date" label="Día" outlined dense type="date" />
+          <q-select v-model="dayTaskForm.calendar" :options="calendarOptions" label="Calendario"
+            outlined dense emit-value map-options />
+        </q-card-section>
+        <q-card-actions align="right" style="padding:0 24px 20px">
+          <q-btn flat label="Cancelar" size="sm" v-close-popup style="color:var(--ds-text-2)" />
+          <q-btn color="primary" label="Crear" size="sm" :loading="savingDayTask"
+            :disable="!dayTaskForm.title || !dayTaskForm.date" @click="handleCreateDayTask" />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
   </q-page>
 </template>
 
@@ -268,15 +368,73 @@
 import { ref, computed, onMounted, watch } from 'vue'
 import { useQuasar } from 'quasar'
 import { useEventsStore } from 'src/stores/events'
+import { useCalendarsStore } from 'src/stores/calendars'
+import { useDayTasksStore } from 'src/stores/dayTasks'
 import { useProjectsStore } from 'src/stores/projects'
 import { useAuthStore } from 'src/stores/auth'
 import { storeToRefs } from 'pinia'
 
-const $q           = useQuasar()
-const store        = useEventsStore()
-const projectsStore = useProjectsStore()
-const auth         = useAuthStore()
-const { projects } = storeToRefs(projectsStore)
+const $q             = useQuasar()
+const store          = useEventsStore()
+const calendarsStore = useCalendarsStore()
+const dayTasksStore  = useDayTasksStore()
+const projectsStore  = useProjectsStore()
+const auth           = useAuthStore()
+const { projects }   = storeToRefs(projectsStore)
+const { calendars }  = storeToRefs(calendarsStore)
+
+// ── Visibilidad de calendarios (persistida en localStorage, por dispositivo) ──
+const hiddenCalendarIds = ref(new Set(JSON.parse(localStorage.getItem('devspace_hidden_calendars') || '[]')))
+function toggleCalendarVisibility(calId) {
+  const next = new Set(hiddenCalendarIds.value)
+  if (next.has(calId)) next.delete(calId); else next.add(calId)
+  hiddenCalendarIds.value = next
+  localStorage.setItem('devspace_hidden_calendars', JSON.stringify([...next]))
+}
+const defaultCalendarId = computed(() => calendars.value.find(c => c.isDefault)?.id ?? calendars.value[0]?.id ?? null)
+
+// ── Nuevo calendario ──
+const newCalendarDialog = ref(false)
+const newCalendarForm   = ref({ name: '', color: '#F97316' })
+const creatingCalendar  = ref(false)
+async function handleCreateCalendar() {
+  if (!newCalendarForm.value.name) return
+  creatingCalendar.value = true
+  try {
+    await calendarsStore.create(newCalendarForm.value)
+    newCalendarDialog.value = false
+    newCalendarForm.value = { name: '', color: '#F97316' }
+    $q.notify({ type: 'positive', message: 'Calendario creado' })
+  } catch { $q.notify({ type: 'negative', message: 'Error al crear el calendario' }) }
+  finally { creatingCalendar.value = false }
+}
+
+// ── Tareas de día ──
+const dayTaskDialog = ref(false)
+const dayTaskForm    = ref({ title: '', date: '', calendar: null })
+const savingDayTask  = ref(false)
+function openNewDayTask(date) {
+  dayTaskForm.value = { title: '', date: date ? dateToLocalISODate(date) : '', calendar: defaultCalendarId.value }
+  dayTaskDialog.value = true
+}
+async function handleCreateDayTask() {
+  if (!dayTaskForm.value.title || !dayTaskForm.value.date) return
+  savingDayTask.value = true
+  try {
+    await dayTasksStore.create(dayTaskForm.value)
+    dayTaskDialog.value = false
+    $q.notify({ type: 'positive', message: 'Tarea creada' })
+  } catch { $q.notify({ type: 'negative', message: 'Error al crear la tarea' }) }
+  finally { savingDayTask.value = false }
+}
+async function handleToggleDayTask(task) {
+  try { await dayTasksStore.toggle(task.id, !task.done) }
+  catch { $q.notify({ type: 'negative', message: 'Error al actualizar la tarea' }) }
+}
+function confirmDeleteDayTask(task) {
+  $q.dialog({ title: 'Eliminar tarea', message: `¿Eliminar "${task.title}"?`, cancel: true })
+    .onOk(async () => { await dayTasksStore.remove(task.id); $q.notify({ type: 'positive', message: 'Tarea eliminada' }) })
+}
 
 // ── Estado del mes ──
 const now          = new Date()
@@ -294,13 +452,14 @@ const eventColors = ['#F97316','#22C55E','#38BDF8','#A78BFA','#F43F5E','#FBBF24'
 const eventDialog = ref(false)
 const saving      = ref(false)
 const editingEvent = ref(null)
-const blankForm = () => ({ title:'', description:'', startDate:'', endDate:'', allDay:false, color:'#F97316', project:null })
+const blankForm = () => ({ title:'', description:'', startDate:'', endDate:'', allDay:false, color:'#F97316', project:null, calendar:null })
 const form = ref(blankForm())
 
 // ── Day view ──
-const dayViewDialog = ref(false)
-const dayViewDate   = ref(null)
-const dayViewEvents = ref([])
+const dayViewDialog   = ref(false)
+const dayViewDate     = ref(null)
+const dayViewEvents   = ref([])
+const dayViewDayTasks = ref([])
 
 // ── Share ──
 const shareDialog = ref(false)
@@ -310,6 +469,11 @@ const inviting    = ref(false)
 // ── Proyectos ──
 const projectOptions = computed(() =>
   projects.value.map(p => ({ label: p.name, value: p.id }))
+)
+
+// ── Calendarios (para selects) ──
+const calendarOptions = computed(() =>
+  calendars.value.map(c => ({ label: c.name, value: c.id }))
 )
 
 // ── Calendario grid ──
@@ -345,6 +509,8 @@ const calendarDays = computed(() => {
   return days
 })
 
+function eventCalendarId(ev) { return typeof ev.calendar === 'object' ? ev.calendar?.id : ev.calendar }
+
 function makeDay(date, currentMonth) {
   const today   = new Date()
   const isToday = date.toDateString() === today.toDateString()
@@ -352,6 +518,7 @@ function makeDay(date, currentMonth) {
   const isWeekend = dow === 0 || dow === 6
 
   const dayEvents = store.events.filter(ev => {
+    if (hiddenCalendarIds.value.has(eventCalendarId(ev))) return false
     const evDate = new Date(ev.startDate)
     return evDate.toDateString() === date.toDateString()
   }).sort((a, b) => {
@@ -360,11 +527,20 @@ function makeDay(date, currentMonth) {
     return new Date(a.startDate) - new Date(b.startDate)
   })
 
+  const dateStr = dateToLocalISODate(date)
+  const dayDayTasks = dayTasksStore.dayTasks.filter(t => {
+    if (hiddenCalendarIds.value.has(eventCalendarId(t))) return false
+    return (typeof t.date === 'string' ? t.date.slice(0, 10) : dateToLocalISODate(new Date(t.date))) === dateStr
+  })
+
   const MAX_VISIBLE = 3
+  const MAX_TASKS_VISIBLE = 2
   return {
     date, day: date.getDate(), currentMonth, isToday, isWeekend,
     events:     dayEvents.slice(0, MAX_VISIBLE),
     extraCount: Math.max(0, dayEvents.length - MAX_VISIBLE),
+    dayTasks:      dayDayTasks.slice(0, MAX_TASKS_VISIBLE),
+    extraTasksCount: Math.max(0, dayDayTasks.length - MAX_TASKS_VISIBLE),
   }
 }
 
@@ -378,12 +554,16 @@ function nextMonth() {
   else currentMonth.value++
 }
 
-watch([currentYear, currentMonth], () => store.fetchMonth(currentYear.value, currentMonth.value))
+watch([currentYear, currentMonth], () => {
+  store.fetchMonth(currentYear.value, currentMonth.value)
+  dayTasksStore.fetchMonth(currentYear.value, currentMonth.value)
+})
 
 onMounted(async () => {
   if (!projects.value.length) await projectsStore.fetchAll()
+  await calendarsStore.fetchAll()
   store.fetchMonth(currentYear.value, currentMonth.value)
-  store.fetchMembers()
+  dayTasksStore.fetchMonth(currentYear.value, currentMonth.value)
 })
 
 // ── Form helpers ──
@@ -410,6 +590,7 @@ function dateToLocalISODate(d) {
 
 function openNew(date) {
   resetForm()
+  form.value.calendar = defaultCalendarId.value
   if (date) {
     const localDate = dateToLocalISODate(date)
     form.value.startDate = localDate + 'T09:00'
@@ -427,6 +608,7 @@ function openEdit(ev) {
     allDay:      ev.allDay,
     color:       ev.color || '#F97316',
     project:     typeof ev.project === 'object' ? ev.project?.id : ev.project ?? null,
+    calendar:    typeof ev.calendar === 'object' ? ev.calendar?.id : ev.calendar ?? defaultCalendarId.value,
   }
   eventDialog.value = true
 }
@@ -483,19 +665,32 @@ function confirmDelete(ev) {
 function openDayView(day) {
   dayViewDate.value  = day.date
   dayViewEvents.value = store.events.filter(ev => {
+    if (hiddenCalendarIds.value.has(eventCalendarId(ev))) return false
     return new Date(ev.startDate).toDateString() === day.date.toDateString()
+  })
+  const dateStr = dateToLocalISODate(day.date)
+  dayViewDayTasks.value = dayTasksStore.dayTasks.filter(t => {
+    if (hiddenCalendarIds.value.has(eventCalendarId(t))) return false
+    return (typeof t.date === 'string' ? t.date.slice(0, 10) : dateToLocalISODate(new Date(t.date))) === dateStr
   })
   dayViewDialog.value = true
 }
 
-// ── Share ──
-async function openShare() { shareDialog.value = true; await store.fetchMembers() }
+// ── Share (por calendario) ──
+const shareCalendarId = ref(null)
+const ownedCalendars  = computed(() => calendars.value.filter(c => c.isOwner))
+
+async function openShare(calendarId) {
+  shareCalendarId.value = calendarId ?? defaultCalendarId.value
+  shareDialog.value = true
+  if (shareCalendarId.value) await calendarsStore.fetchMembers(shareCalendarId.value)
+}
 
 async function handleInvite() {
-  if (!inviteEmail.value) return
+  if (!inviteEmail.value || !shareCalendarId.value) return
   inviting.value = true
   try {
-    await store.invite(inviteEmail.value)
+    await calendarsStore.invite(shareCalendarId.value, inviteEmail.value)
     inviteEmail.value = ''
     $q.notify({ type: 'positive', message: 'Calendario compartido' })
   } catch (err) {
@@ -509,7 +704,7 @@ async function handleInvite() {
 
 async function handleRemoveMember(m) {
   $q.dialog({ title: 'Quitar acceso', message: `¿Quitar acceso a ${m.user?.name}?`, cancel: true })
-    .onOk(async () => { await store.removeMember(m.id); $q.notify({ type: 'positive', message: 'Acceso removido' }) })
+    .onOk(async () => { await calendarsStore.removeMember(shareCalendarId.value, m.id); $q.notify({ type: 'positive', message: 'Acceso removido' }) })
 }
 
 // ── Formatters ──
@@ -688,6 +883,32 @@ function eventStyle(ev) {
   transition: background 120ms ease, color 120ms ease;
 }
 .cal-extra:hover { background: var(--ds-orange-dim); color: var(--ds-orange); }
+
+/* ── Tareas de día en la celda ── */
+.cal-daytasks { display: flex; flex-direction: column; gap: 2px; margin-top: 2px; }
+.cal-daytask {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 10.5px;
+  padding: 1px 3px;
+  border-radius: 4px;
+  cursor: pointer;
+  color: var(--ds-text-2);
+}
+.cal-daytask:hover { background: var(--ds-bg-hover); }
+.cal-daytask--done .cal-daytask-title { text-decoration: line-through; opacity: 0.55; }
+.cal-daytask-title { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.day-view-task {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 6px;
+  border-radius: 6px;
+}
+.day-view-task:hover { background: var(--ds-bg-hover); }
+.day-view-task--done span { text-decoration: line-through; opacity: 0.55; }
 
 /* ── Color picker ── */
 .color-swatch {

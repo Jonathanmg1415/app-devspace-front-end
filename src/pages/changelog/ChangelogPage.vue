@@ -58,6 +58,18 @@ const badgeLabel = t => ({ new: 'Nuevo', fix: 'Fix', improve: 'Mejora', breaking
 
 const releases = [
   {
+    version: 'v0.8.0',
+    type: 'alpha',
+    date: '4 Sep 2026',
+    title: 'Calendarios múltiples y tareas de día',
+    changes: [
+      { type: 'new', text: 'Creá varios calendarios propios (ej. "Personal", "Trabajo"), cada uno con su nombre y color.' },
+      { type: 'new', text: 'Agregá tareas simples a un día puntual del calendario (checkbox, sin hora) — independientes de las tareas de proyecto.' },
+      { type: 'new', text: 'Compartí cada calendario por separado con quien quieras, en vez de compartir todo tu calendario de una.' },
+      { type: 'improve', text: 'Ahora cualquiera con acceso a un calendario compartido puede crear, editar y marcar como hechas sus tareas y eventos — antes solo podía verlos.' },
+    ],
+  },
+  {
     version: 'v0.7.0',
     type: 'alpha',
     date: '4 Ago 2026',
