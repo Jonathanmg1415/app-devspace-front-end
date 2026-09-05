@@ -64,7 +64,7 @@
             @click="copyCmd(cmd.command)"
             style="cursor: pointer"
           >
-            <span style="flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">
+            <span style="flex: 1; overflow: hidden; white-space: pre-wrap; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical">
               {{ cmd.command }}
             </span>
             <q-btn
@@ -117,8 +117,10 @@
             v-model="form.command"
             label="Comando"
             outlined
-            dense
-            style="font-family: 'JetBrains Mono', monospace"
+            type="textarea"
+            autogrow
+            input-class="cmd-input-mono"
+            hint="Podés pegar comandos de varias líneas — se guardan tal cual"
           />
 
           <div>
@@ -267,6 +269,10 @@ function confirmDelete(cmd) {
 </script>
 
 <style scoped>
+:deep(.cmd-input-mono) {
+  font-family: 'JetBrains Mono', monospace;
+  white-space: pre;
+}
 .ds-tag {
   font-size: 10px;
   font-weight: 500;
