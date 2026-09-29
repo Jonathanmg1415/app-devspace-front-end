@@ -4,6 +4,10 @@ import { useAuthStore } from 'src/stores/auth'
 
 const routes = [
   {
+    path: '/landing',
+    component: () => import('src/pages/landing/LandingPage.vue'),
+  },
+  {
     path: '/auth',
     component: () => import('src/layouts/AuthLayout.vue'),
     children: [
@@ -56,6 +60,16 @@ export function setupRouterGuards(pinia) {
   router.afterEach(() => { LoadingBar.stop() })
 
   router.beforeEach((to) => {
+    // Visitante sin sesión que entra por la raíz ('' redirige a /projects,
+    // que hereda requiresAuth) ve la landing pública en vez del login directo.
+    const cameFromRoot = to.path === '/' || to.redirectedFrom?.path === '/'
+    if (cameFromRoot && !auth.token) {
+      return { path: '/landing' }
+    }
+    if (to.path === '/landing' && auth.token) {
+      return { path: '/projects' }
+    }
+
     // Solo verificamos si hay token — la validación real contra la API
     // ocurre en App.vue (onMounted) para no bloquear la navegación inicial.
     if (to.meta.requiresAuth && !auth.token) {
