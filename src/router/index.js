@@ -60,14 +60,20 @@ export function setupRouterGuards(pinia) {
   router.afterEach(() => { LoadingBar.stop() })
 
   router.beforeEach((to) => {
+    // /landing se resuelve aparte y siempre corta acá — si no, al redirigir hacia
+    // ella más abajo, to.redirectedFrom sigue apuntando a '/' (vue-router lo
+    // arrastra a través de toda la cadena de redirects) y el bloque de abajo
+    // la volvería a redirigir a sí misma en loop infinito.
+    if (to.path === '/landing') {
+      if (auth.token) return { path: '/projects' }
+      return
+    }
+
     // Visitante sin sesión que entra por la raíz ('' redirige a /projects,
     // que hereda requiresAuth) ve la landing pública en vez del login directo.
     const cameFromRoot = to.path === '/' || to.redirectedFrom?.path === '/'
     if (cameFromRoot && !auth.token) {
       return { path: '/landing' }
-    }
-    if (to.path === '/landing' && auth.token) {
-      return { path: '/projects' }
     }
 
     // Solo verificamos si hay token — la validación real contra la API
