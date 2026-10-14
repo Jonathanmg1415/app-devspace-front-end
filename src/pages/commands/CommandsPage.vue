@@ -214,7 +214,8 @@ async function generateDescription() {
   if (!form.value.command) return;
   generatingDesc.value = true;
   try {
-    const { data } = await api.post("/api/ai/describe-command", { command: form.value.command });
+    // timeout largo: cold-start de Render + hasta 30s que el backend ya le da a Groq
+    const { data } = await api.post("/api/ai/describe-command", { command: form.value.command }, { timeout: 60000 });
     if (data.description) {
       form.value.description = data.description;
     } else {

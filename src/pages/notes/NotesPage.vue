@@ -232,11 +232,12 @@ async function generateWithAI() {
   if (!aiForm.value.prompt) return
   aiGenerating.value = true
   try {
+    // timeout largo: cold-start de Render + hasta 30s que el backend ya le da a Groq
     const { data } = await api.post('/api/ai/generate', {
       prompt:  aiForm.value.prompt,
       docType: aiForm.value.docType,
       context: aiForm.value.context,
-    })
+    }, { timeout: 60000 })
     form.value.content = form.value.content
       ? form.value.content + '\n\n' + data.content
       : data.content

@@ -3,9 +3,15 @@ import axios from 'axios'
 import { Notify } from 'quasar'
 import { loaderShow, loaderHide } from 'src/composables/loader'
 
+// Render (free tier) puede tardar 30-50s en despertar el backend tras estar dormido —
+// 15s cortaba la conexión antes de que el cold-start terminara (ver "Sin conexión al
+// servidor" en requests normales recién abierta la app). Los endpoints de IA además
+// necesitan su propio override más alto: el backend ya les da hasta 30s por modelo
+// en su propio helper de Groq (ver api/helpers/groq.js), así que 15s también cortaba
+// ahí incluso sin cold-start.
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:1337',
-  timeout: 15000,
+  timeout: 45000,
 })
 
 // GET requests que cargan páginas muestran el overlay; estas se saltan

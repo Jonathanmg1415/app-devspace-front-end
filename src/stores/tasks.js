@@ -61,9 +61,12 @@ export const useTasksStore = defineStore('tasks', () => {
   async function extractFromFile(file, projectId) {
     const formData = new FormData()
     formData.append('file', file)
+    // timeout largo: cold-start de Render + hasta 30s que el backend ya le da a Groq
+    // (más el tiempo de subir el archivo en sí, hasta 15MB)
     const { data } = await api.post('/api/tasks/extract', formData, {
       params: { projectId },
       headers: { 'Content-Type': 'multipart/form-data' },
+      timeout: 60000,
     })
     return data.tasks ?? []
   }
