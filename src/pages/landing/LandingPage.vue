@@ -18,11 +18,11 @@
         <section class="landing-hero">
           <div class="hero-badge">Workspace técnico personal</div>
           <h1 class="hero-title">
-            Todo tu trabajo técnico,<br />
+            Todo su trabajo técnico,<br />
             en <span class="text-orange">un solo lugar</span>
           </h1>
           <p class="hero-subtitle">
-            Proyectos, tareas, notas, comandos, archivos y calendario — con IA que te ayuda
+            Proyectos, tareas, notas, comandos, archivos y calendario — con IA que le ayuda
             a redactar documentos y convertir imágenes o texto en tareas accionables.
           </p>
           <div class="hero-actions">
@@ -43,7 +43,7 @@
         </section>
 
         <section class="landing-cta">
-          <div class="cta-title">¿Listo para ordenar tu trabajo?</div>
+          <div class="cta-title">¿Listo para ordenar su trabajo?</div>
           <q-btn unelevated no-caps label="Crear cuenta gratis" to="/auth/register"
             color="primary" class="hero-btn-cta" icon-right="arrow_forward" />
         </section>
@@ -61,7 +61,7 @@ const features = [
   {
     icon: 'folder_open',
     title: 'Proyectos',
-    desc: 'Organizá tu trabajo en proyectos independientes, cada uno con su propio espacio.',
+    desc: 'Organice su trabajo en proyectos independientes, cada uno con su propio espacio.',
   },
   {
     icon: 'task_alt',
@@ -81,7 +81,7 @@ const features = [
   {
     icon: 'link',
     title: 'Links',
-    desc: 'Guardá y organizá enlaces relevantes de cada proyecto sin perderlos entre pestañas.',
+    desc: 'Guarde y organice los enlaces relevantes de cada proyecto sin perderlos entre pestañas.',
   },
   {
     icon: 'terminal',
@@ -91,17 +91,17 @@ const features = [
   {
     icon: 'attach_file',
     title: 'Archivos',
-    desc: 'Subí y organizá archivos por proyecto, disponibles desde cualquier lugar.',
+    desc: 'Suba y organice archivos por proyecto, disponibles desde cualquier lugar.',
   },
   {
     icon: 'auto_awesome',
     title: 'Asistente de IA',
-    desc: 'Generá documentos, describí comandos y extraé tareas desde texto o imágenes con un asistente integrado.',
+    desc: 'Genere documentos, describa comandos y extraiga tareas desde texto o imágenes con un asistente integrado.',
   },
   {
     icon: 'groups',
     title: 'Colaboración',
-    desc: 'Compartí proyectos y calendarios con tu equipo, con actividad y permisos por miembro.',
+    desc: 'Comparta proyectos y calendarios con su equipo, con actividad y permisos por miembro.',
   },
 ]
 </script>

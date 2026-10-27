@@ -140,11 +140,11 @@
               outlined
               type="textarea"
               :rows="8"
-              placeholder="Escribe el contenido... Usa ```sql para bloques de código"
+              placeholder="Escriba el contenido... Use ```sql para bloques de código"
               style="font-family:'JetBrains Mono',monospace; font-size:12.5px"
             />
             <div style="font-size:11px; color:var(--ds-text-3); margin-top:4px">
-              Tip: escribe <code style="background:var(--ds-bg-0);padding:1px 4px;border-radius:3px">```sql</code> para bloques de código. Soporta: sql, js, css, python, html, bash
+              Sugerencia: escriba <code style="background:var(--ds-bg-0);padding:1px 4px;border-radius:3px">```sql</code> para bloques de código. Soporta: sql, js, css, python, html, bash
             </div>
           </div>
         </q-card-section>
@@ -261,7 +261,7 @@ async function insertCodeBlock() {
     }).onOk(val => resolve(val)).onCancel(() => resolve(null))
   })
   if (!lang) return
-  const snippet = `\`\`\`${lang}\n// tu código aquí\n\`\`\``
+  const snippet = `\`\`\`${lang}\n// su código aquí\n\`\`\``
   form.value.content = form.value.content
     ? form.value.content + '\n\n' + snippet
     : snippet

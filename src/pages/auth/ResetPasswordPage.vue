@@ -14,7 +14,7 @@
       <div v-if="!token" class="error-box q-mb-md">
         <q-icon name="error_outline" size="24px" style="color:var(--ds-negative)" />
         <p style="margin:0; font-size:13px; color:var(--ds-text-2)">
-          Enlace inválido. Solicita uno nuevo desde el login.
+          Enlace inválido. Solicite uno nuevo desde el inicio de sesión.
         </p>
       </div>
 
@@ -73,7 +73,7 @@ async function handleSubmit() {
     await api.post('/api/auth/reset-password', { token, password: password.value })
     done.value = true
   } catch (err) {
-    $q.notify({ type: 'negative', message: err.response?.data?.mensaje || 'El enlace ha expirado. Solicita uno nuevo.' })
+    $q.notify({ type: 'negative', message: err.response?.data?.mensaje || 'El enlace ha expirado. Solicite uno nuevo.' })
   } finally { loading.value = false }
 }
 </script>

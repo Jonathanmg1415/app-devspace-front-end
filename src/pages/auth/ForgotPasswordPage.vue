@@ -50,7 +50,7 @@ async function handleSubmit() {
     await api.post('/api/auth/forgot-password', { email: email.value })
     sent.value = true
   } catch {
-    $q.notify({ type: 'negative', message: 'Error al enviar el correo. Intenta de nuevo.' })
+    $q.notify({ type: 'negative', message: 'Error al enviar el correo. Inténtelo de nuevo.' })
   } finally { loading.value = false }
 }
 </script>

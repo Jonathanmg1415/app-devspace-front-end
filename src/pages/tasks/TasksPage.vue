@@ -199,7 +199,7 @@
           <div v-if="!tasksByStatus(col.status).length"
             class="kanban-empty"
             :class="{ 'kanban-empty--active': dragOverCol === col.status }">
-            {{ dragOverCol === col.status ? 'Suelta aquí' : 'Sin tareas' }}
+            {{ dragOverCol === col.status ? 'Suelte aquí' : 'Sin tareas' }}
           </div>
         </div>
       </div>
@@ -307,7 +307,7 @@
               use-input use-chips
               new-value-mode="add-unique"
               :options="[]"
-              hint="Escribe y presiona Enter para agregar etiquetas"
+              hint="Escriba y presione Enter para agregar etiquetas"
             />
 
             <!-- Checklist -->
@@ -390,7 +390,7 @@
         </q-card-section>
         <q-card-section style="padding:0 24px 20px; flex-shrink:0; border-top:1px solid var(--ds-border)">
           <div class="row items-end q-gutter-sm q-pt-sm">
-            <q-input v-model="newComment" outlined dense placeholder="Escribe un comentario..."
+            <q-input v-model="newComment" outlined dense placeholder="Escriba un comentario..."
               class="col" type="textarea" rows="2" autogrow @keydown.ctrl.enter="submitComment" />
             <q-btn color="primary" icon="send" dense size="sm" style="height:38px; width:38px"
               :loading="submittingComment" :disable="!newComment.trim()" @click="submitComment">

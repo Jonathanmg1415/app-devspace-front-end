@@ -91,7 +91,7 @@
     <EmptyState v-if="!loading && !items.length"
       icon="terminal"
       title="Sin comandos guardados"
-      subtitle="Guarda tus snippets y comandos frecuentes para copiarlos con un clic cuando los necesites" />
+      subtitle="Guarde sus snippets y comandos frecuentes para copiarlos con un clic cuando los necesite" />
 
     <div v-if="hasMore && !loading" class="flex flex-center q-mt-md">
       <q-btn flat size="sm" label="Cargar más" icon="expand_more"
@@ -120,7 +120,7 @@
             type="textarea"
             autogrow
             input-class="cmd-input-mono"
-            hint="Podés pegar comandos de varias líneas — se guardan tal cual"
+            hint="Puede pegar comandos de varias líneas — se guardan tal cual"
           />
 
           <div>

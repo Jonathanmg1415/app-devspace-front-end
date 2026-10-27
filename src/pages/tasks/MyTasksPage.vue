@@ -99,7 +99,7 @@ onMounted(async () => {
     const { data } = await api.get('/api/tasks/mine')
     tasks.value = data.tasks ?? []
   } catch {
-    $q.notify({ type: 'negative', message: 'Error al cargar tus tareas' })
+    $q.notify({ type: 'negative', message: 'Error al cargar sus tareas' })
   } finally { loading.value = false }
 })
 

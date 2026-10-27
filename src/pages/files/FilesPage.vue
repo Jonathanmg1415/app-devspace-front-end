@@ -21,11 +21,11 @@
       @drop.prevent="onDrop">
       <div v-if="!dragging" class="drop-hint">
         <q-icon name="cloud_upload" size="32px" style="color:var(--ds-text-3)" />
-        <span>Arrastra archivos aquí o usa el botón "Subir"</span>
+        <span>Arrastre archivos aquí o use el botón "Subir"</span>
       </div>
       <div v-else class="drop-hint drop-hint--active">
         <q-icon name="file_download" size="36px" />
-        <span>Suelta para subir</span>
+        <span>Suelte para subir</span>
       </div>
     </div>
 
@@ -47,7 +47,7 @@
     <EmptyState v-else-if="!loading && !files.length"
       icon="folder_open"
       title="Sin archivos"
-      subtitle="Arrastra documentos aquí o usa el botón Subir para adjuntarlos al proyecto" />
+      subtitle="Arrastre documentos aquí o use el botón Subir para adjuntarlos al proyecto" />
 
     <q-list v-else style="border:1px solid var(--ds-border); border-radius:var(--ds-radius); overflow:hidden">
       <q-item v-for="(file, i) in files" :key="file.id" class="q-py-sm"

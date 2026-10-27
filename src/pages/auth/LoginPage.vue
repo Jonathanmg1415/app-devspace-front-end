@@ -8,7 +8,7 @@
         Dev<span style="color:var(--ds-orange)">Space</span>
       </div>
       <div class="q-mb-lg" style="font-size:13px; color:var(--ds-text-2); text-align:center">
-        Tu workspace técnico personal
+        Su workspace técnico personal
       </div>
 
       <q-form @submit="handleLogin" class="q-gutter-md">
@@ -39,7 +39,7 @@
       </div>
       <div class="q-mt-sm text-center" style="font-size:12px; color:var(--ds-text-3)">
         <router-link to="/auth/forgot-password" style="color:var(--ds-text-3); text-decoration:none">
-          ¿Olvidaste tu contraseña?
+          ¿Olvidó su contraseña?
         </router-link>
       </div>
       <div class="q-mt-sm text-center" style="font-size:11px; color:var(--ds-text-3)">

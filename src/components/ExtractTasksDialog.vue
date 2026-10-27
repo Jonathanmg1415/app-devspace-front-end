@@ -4,7 +4,7 @@
       <q-card-section style="padding:24px 24px 0; flex-shrink:0">
         <div style="font-size:15px; font-weight:600; color:var(--ds-text-1)">Crear tareas desde archivo</div>
         <div style="font-size:12.5px; color:var(--ds-text-3); margin-top:2px">
-          Subí una imagen o un .docx — la IA propone tareas, vos elegís cuáles crear.
+          Suba una imagen o un .docx — la IA propone tareas y usted elige cuáles crear.
         </div>
       </q-card-section>
 

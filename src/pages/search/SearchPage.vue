@@ -60,7 +60,7 @@
 
     <div v-else-if="!q" class="flex flex-center column q-py-xl" style="color:var(--ds-text-3)">
       <q-icon name="manage_search" size="48px" style="opacity:0.2" />
-      <p class="q-mt-md" style="font-size:13px">Escribe para buscar en todos tus proyectos</p>
+      <p class="q-mt-md" style="font-size:13px">Escriba para buscar en todos sus proyectos</p>
     </div>
   </q-page>
 </template>

@@ -3,7 +3,7 @@
     <div class="row items-center q-mb-lg">
       <div class="col">
         <div class="ds-page-title">Mi perfil</div>
-        <div style="font-size:12px; color:var(--ds-text-3); margin-top:2px">Información de tu cuenta</div>
+        <div style="font-size:12px; color:var(--ds-text-3); margin-top:2px">Información de su cuenta</div>
       </div>
     </div>
 
@@ -32,7 +32,7 @@
             @click="cancelAvatar" />
         </div>
         <div v-else style="font-size:11px; color:var(--ds-text-3); margin-top:6px">
-          Haz clic en la foto para cambiarla
+          Haga clic en la foto para cambiarla
         </div>
       </div>
     </div>
@@ -46,7 +46,7 @@
         <div class="section-title">Nombre</div>
       </q-card-section>
       <q-card-section style="padding:12px 24px">
-        <q-input v-model="nameForm.name" label="Tu nombre" outlined dense
+        <q-input v-model="nameForm.name" label="Su nombre" outlined dense
           :rules="[v => !!v || 'El nombre es requerido']" />
       </q-card-section>
       <q-card-actions style="padding:0 24px 20px">

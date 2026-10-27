@@ -83,7 +83,7 @@ export default boot(({ app }) => {
           Notify.create({
             type: 'negative',
             message: 'Sin conexión al servidor',
-            caption: 'Si es la primera carga puede tardar unos segundos en despertar — intenta de nuevo',
+            caption: 'Si es la primera carga puede tardar unos segundos en despertar — inténtelo de nuevo',
             icon: 'cloud_off',
             timeout: 5000,
           })
@@ -95,7 +95,7 @@ export default boot(({ app }) => {
         Notify.create({
           type: 'negative',
           message: 'Error interno del servidor',
-          caption: 'Intenta de nuevo en unos segundos',
+          caption: 'Inténtelo de nuevo en unos segundos',
           icon: 'error_outline',
           timeout: 4000,
         })

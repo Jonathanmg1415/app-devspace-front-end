@@ -8,7 +8,7 @@
         Dev<span style="color:var(--ds-orange)">Space</span>
       </div>
       <div class="q-mb-lg" style="font-size:13px; color:var(--ds-text-2); text-align:center">
-        Crea tu cuenta gratuita
+        Cree su cuenta gratuita
       </div>
 
       <q-form @submit="handleRegister" class="q-gutter-md">

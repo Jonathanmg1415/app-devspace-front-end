@@ -31,7 +31,7 @@ module.exports = configure(function (ctx) {
       manifest: {
         name: 'DevSpace',
         short_name: 'DevSpace',
-        description: 'Tu workspace técnico personal',
+        description: 'Su workspace técnico personal',
         display: 'standalone',
         orientation: 'portrait',
         background_color: '#0B0B0D',

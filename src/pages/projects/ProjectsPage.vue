@@ -20,7 +20,7 @@
     <EmptyState v-else-if="!projects.length"
       icon="folder_open"
       title="Sin proyectos aún"
-      subtitle="Crea tu primer proyecto para empezar a organizar tu trabajo">
+      subtitle="Cree su primer proyecto para empezar a organizar su trabajo">
       <q-btn color="primary" label="Crear el primero" size="sm" @click="openCreate = true" />
     </EmptyState>
 
